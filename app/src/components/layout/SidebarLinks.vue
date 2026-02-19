@@ -50,9 +50,3 @@ const { menuOpen } = inject(menuKey) as MenuInjectionOptions
     </div>
   </template>
 </template>
-
-<!-- <style lang="postcss" scoped>
-.nav-link {
-  @apply flex items-center gap-3 px-4 py-2 mx-2 transition-colors rounded-lg hover:text-primary text-muted-foreground;
-}
-</style> -->

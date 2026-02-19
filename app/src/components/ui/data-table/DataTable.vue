@@ -1,6 +1,11 @@
 <script setup lang="ts" generic="TData, TValue">
-import type { ColumnDef, PaginationState } from '@tanstack/vue-table'
-import { FlexRender, getCoreRowModel, getPaginationRowModel, useVueTable } from '@tanstack/vue-table'
+import type { ColumnDef, PaginationState, TableOptions, TableMeta } from '@tanstack/vue-table'
+import {
+  FlexRender,
+  getCoreRowModel,
+  getPaginationRowModel,
+  useVueTable,
+} from '@tanstack/vue-table'
 import {
   Pagination,
   PaginationContent,
@@ -19,12 +24,12 @@ import { computed, ref } from 'vue'
 const props = defineProps<{
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
-  options?: any
+  options?: Partial<TableOptions<TData>> & { meta?: TableMeta<TData> }
   paginationKey?: string
 }>()
 
 const emit = defineEmits<{
-  (e: 'pagination-change', pagination: PaginationState): void
+  'pagination-change': [pagination: PaginationState]
 }>()
 
 const paginationStore = usePaginationStore()
@@ -54,14 +59,14 @@ const table = useVueTable({
     return props.columns
   },
   get meta() {
-    return props.options?.meta
+    return props.options?.meta as TableMeta<TData> | undefined
   },
   getCoreRowModel: getCoreRowModel(),
   getPaginationRowModel: getPaginationRowModel(),
   // Controlled State
   state: {
     get pagination() {
-        return pagination.value
+      return pagination.value
     },
   },
   // Update Handler
@@ -69,19 +74,19 @@ const table = useVueTable({
     // Resolve updater
     const old = pagination.value
     const next = typeof updaterOrValue === 'function' ? updaterOrValue(old) : updaterOrValue
-    
+
     // SAFEGUARD: If asking to reset to 0, but we were on a higher page...
     if (next.pageIndex === 0 && old.pageIndex > 0) {
-        // ...and we suspect it's because of missing data
-        if (table.getFilteredRowModel().rows.length === 0) {
-            return // REJECT the update. Keep the store as is.
-        }
+      // ...and we suspect it's because of missing data
+      if (table.getFilteredRowModel().rows.length === 0) {
+        return // REJECT the update. Keep the store as is.
+      }
     }
 
     if (props.paginationKey) {
-        paginationStore.setPagination(props.paginationKey, next)
+      paginationStore.setPagination(props.paginationKey, next)
     } else {
-        localPagination.value = next
+      localPagination.value = next
     }
     emit('pagination-change', next)
   },
@@ -91,7 +96,8 @@ const table = useVueTable({
 <template>
   <div class="space-y-4">
     <div class="border rounded-md">
-      <Table>
+      <!-- prettier-ignore -->
+      <Table> <!-- NOSONAR -->
         <TableHeader>
           <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
             <TableHead v-for="header in headerGroup.headers" :key="header.id">
@@ -117,7 +123,9 @@ const table = useVueTable({
           </template>
           <template v-else>
             <TableRow>
-              <TableCell :colspan="columns.length" class="h-24 text-center"> No results. </TableCell>
+              <TableCell :colspan="columns.length" class="h-24 text-center">
+                No results.
+              </TableCell>
             </TableRow>
           </template>
         </TableBody>
@@ -126,58 +134,68 @@ const table = useVueTable({
 
     <div class="flex items-center justify-between pl-4 pr-2 pb-4">
       <div class="flex-1 text-sm text-muted-foreground">
-        Showing {{ table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1 }} to
-        {{ Math.min((table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize, table.getFilteredRowModel().rows.length) }} of
-        {{ table.getFilteredRowModel().rows.length }} entries
+        Showing
+        {{ table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1 }} to
+        {{
+          Math.min(
+            (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
+            table.getFilteredRowModel().rows.length,
+          )
+        }}
+        of {{ table.getFilteredRowModel().rows.length }} entries
       </div>
       <div class="flex items-center space-x-6 lg:space-x-8">
-        <Pagination 
-          v-if="table.getPageCount() > 1" 
-          :total="table.getFilteredRowModel().rows.length" 
+        <Pagination
+          v-if="table.getPageCount() > 1"
+          :total="table.getFilteredRowModel().rows.length"
           :items-per-page="table.getState().pagination.pageSize"
-          :sibling-count="1" 
-          show-edges 
+          :sibling-count="1"
+          show-edges
           :default-page="1"
           :page="table.getState().pagination.pageIndex + 1"
           @update:page="(p) => table.setPageIndex(p - 1)"
         >
           <PaginationContent>
-            <PaginationFirst 
-              href="#" 
+            <PaginationFirst
+              href="#"
               @click.prevent="table.setPageIndex(0)"
               :class="{ 'pointer-events-none opacity-50': !table.getCanPreviousPage() }"
             />
-            <PaginationPrevious 
-              href="#" 
-              @click.prevent="table.previousPage()" 
+            <PaginationPrevious
+              href="#"
+              @click.prevent="table.previousPage()"
               :class="{ 'pointer-events-none opacity-50': !table.getCanPreviousPage() }"
             />
-            
+
             <template v-for="(_, index) in table.getPageCount()" :key="index">
-              <PaginationItem 
+              <PaginationItem
                 v-if="
-                  index === 0 || 
-                  index === table.getPageCount() - 1 || 
-                  (index >= table.getState().pagination.pageIndex - 1 && index <= table.getState().pagination.pageIndex + 1)
+                  index === 0 ||
+                  index === table.getPageCount() - 1 ||
+                  (index >= table.getState().pagination.pageIndex - 1 &&
+                    index <= table.getState().pagination.pageIndex + 1)
                 "
                 :value="index + 1"
                 :is-active="table.getState().pagination.pageIndex === index"
               >
                 {{ index + 1 }}
               </PaginationItem>
-              <PaginationEllipsis v-else-if="
-                (index === 1 && table.getState().pagination.pageIndex > 2) ||
-                (index === table.getPageCount() - 2 && table.getState().pagination.pageIndex < table.getPageCount() - 3)
-              " />
+              <PaginationEllipsis
+                v-else-if="
+                  (index === 1 && table.getState().pagination.pageIndex > 2) ||
+                  (index === table.getPageCount() - 2 &&
+                    table.getState().pagination.pageIndex < table.getPageCount() - 3)
+                "
+              />
             </template>
 
-            <PaginationNext 
-              href="#" 
+            <PaginationNext
+              href="#"
               @click.prevent="table.nextPage()"
               :class="{ 'pointer-events-none opacity-50': !table.getCanNextPage() }"
             />
-            <PaginationLast 
-              href="#" 
+            <PaginationLast
+              href="#"
               @click.prevent="table.setPageIndex(table.getPageCount() - 1)"
               :class="{ 'pointer-events-none opacity-50': !table.getCanNextPage() }"
             />

@@ -11,5 +11,3 @@ defineEmits(['commit'])
     @blur="$emit('commit')"
   />
 </template>
-
-<style scoped></style>

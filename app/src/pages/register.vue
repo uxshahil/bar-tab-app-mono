@@ -1,22 +1,59 @@
 <script setup lang="ts">
 import router from '@/router'
 import { register } from '@/services/supabase/auth'
+import { UserRole } from '@/types/TypesAuth'
 
-const formData = ref({
-  username: '',
-  email: '',
-  password: '',
-  confirmPassword: '',
-  firstName: '',
-  lastName: '',
-  pin: '',
-  role: UserRole.BarManager,
+import { toTypedSchema } from '@vee-validate/zod'
+import { useForm } from 'vee-validate'
+import * as z from 'zod'
+
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { Separator } from '@/components/ui/separator'
+
+const formSchema = toTypedSchema(
+  z
+    .object({
+      username: z.string().min(2, 'Username must be at least 2 characters'),
+      firstName: z.string().min(2, 'First name must be at least 2 characters'),
+      lastName: z.string().min(2, 'Last name must be at least 2 characters'),
+      email: z.string().email('Not a valid email format'),
+      password: z.string().min(6, 'Password must be at least 6 characters'),
+      confirmPassword: z.string(),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: "Passwords don't match",
+      path: ['confirmPassword'],
+    }),
+)
+
+const form = useForm({
+  validationSchema: formSchema,
+  initialValues: {
+    username: '',
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  },
 })
 
-const signup = async () => {
-  const isRegistered = await register(formData.value)
+const onSubmit = form.handleSubmit(async (values) => {
+  const isRegistered = await register({
+    username: values.username,
+    email: values.email,
+    password: values.password,
+    confirmPassword: values.confirmPassword,
+    firstName: values.firstName,
+    lastName: values.lastName,
+    pin: '',
+    role: UserRole.BarManager,
+  })
   if (isRegistered) router.push('/')
-}
+})
 </script>
 
 <template>
@@ -33,75 +70,69 @@ const signup = async () => {
           <Button variant="outline" class="w-full"> Register with Google </Button>
           <Separator label="Or" />
         </div>
-        <form class="grid gap-4" @submit.prevent="signup">
-          <div class="grid gap-2">
-            <Label id="username" class="text-left">Username</Label>
-            <Input
-              id="username"
-              type="text"
-              placeholder="johndoe19"
-              required
-              v-model="formData.username"
-            />
-          </div>
+        <form class="grid gap-4" @submit="onSubmit">
+          <FormField v-slot="{ componentField }" name="username">
+            <FormItem class="text-left">
+              <FormLabel>Username</FormLabel>
+              <FormControl>
+                <Input type="text" placeholder="johndoe19" v-bind="componentField" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+
           <div class="flex flex-col sm:flex-row justify-between gap-4">
-            <div class="grid gap-2">
-              <Label id="first_name" class="text-left">First Name</Label>
-              <Input
-                id="first_name"
-                type="text"
-                placeholder="John"
-                required
-                v-model="formData.firstName"
-              />
-            </div>
-            <div class="grid gap-2">
-              <Label id="last_name" class="text-left">Last Name</Label>
-              <Input
-                id="last_name"
-                type="text"
-                placeholder="Doe"
-                required
-                v-model="formData.lastName"
-              />
-            </div>
-          </div>
-          <div class="grid gap-2">
-            <Label id="email" class="text-left">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="johndoe19@example.com"
-              required
-              v-model="formData.email"
-            />
+            <FormField v-slot="{ componentField }" name="firstName">
+              <FormItem class="text-left w-full">
+                <FormLabel>First Name</FormLabel>
+                <FormControl>
+                  <Input type="text" placeholder="John" v-bind="componentField" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField v-slot="{ componentField }" name="lastName">
+              <FormItem class="text-left w-full">
+                <FormLabel>Last Name</FormLabel>
+                <FormControl>
+                  <Input type="text" placeholder="Doe" v-bind="componentField" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
           </div>
 
-          <div class="grid gap-2">
-            <Label id="password" class="text-left">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="*****"
-              autocomplete
-              required
-              v-model="formData.password"
-            />
-          </div>
+          <FormField v-slot="{ componentField }" name="email">
+            <FormItem class="text-left">
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input type="email" placeholder="johndoe19@example.com" v-bind="componentField" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
 
-          <div class="grid gap-2">
-            <Label id="confirm_password" class="text-left">Confirm Password</Label>
-            <Input
-              id="confirm_password"
-              type="password"
-              placeholder="*****"
-              autocomplete
-              required
-              v-model="formData.confirmPassword"
-            />
-          </div>
+          <FormField v-slot="{ componentField }" name="password">
+            <FormItem class="text-left">
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <Input type="password" placeholder="*****" v-bind="componentField" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+
+          <FormField v-slot="{ componentField }" name="confirmPassword">
+            <FormItem class="text-left">
+              <FormLabel>Confirm Password</FormLabel>
+              <FormControl>
+                <Input type="password" placeholder="*****" v-bind="componentField" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+
           <Button type="submit" class="w-full"> Register </Button>
-          <!-- <Button variant="outline" class="w-full"> Login with Google </Button> -->
         </form>
         <div class="mt-4 text-sm text-center">
           Already have an account?

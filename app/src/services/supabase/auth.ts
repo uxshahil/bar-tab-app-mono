@@ -6,7 +6,7 @@ import { UserRole } from '@/types/TypesAuth'
 export const register = async (formData: RegisterForm) => {
   const { data, error } = await supabase.auth.signUp({
     email: formData.email,
-    password: formData.password
+    password: formData.password,
   })
 
   if (error) return console.error(error)
@@ -25,7 +25,7 @@ export const register = async (formData: RegisterForm) => {
       full_name: formData.firstName.concat(' ', formData.lastName),
       user_role: formData.role,
       pin: generatePin(formData.role),
-      email: formData.email
+      email: formData.email,
     })
 
     if (error) return console.log('Profiles error', error)
@@ -46,7 +46,7 @@ export const posLogin = async (formData: PosLoginForm) => {
 
   const { error } = await supabase.auth.signInWithPassword({
     email: profileData.email,
-    password: profileData.password
+    password: profileData.password,
   })
 
   return { error }
@@ -55,7 +55,7 @@ export const posLogin = async (formData: PosLoginForm) => {
 export const login = async (formData: LoginForm) => {
   const { error } = await supabase.auth.signInWithPassword({
     email: formData.email,
-    password: formData.password
+    password: formData.password,
   })
 
   return { error }

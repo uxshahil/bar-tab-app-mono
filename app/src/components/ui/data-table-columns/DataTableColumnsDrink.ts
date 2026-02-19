@@ -8,7 +8,7 @@ export const columns: ColumnDef<Drinks[0]>[] = [
   {
     accessorKey: 'id',
     header: () => h('div', { class: 'text-left' }, 'ID'),
-    cell: ({ row }) => h('div', { class: 'text-left' }, row.getValue('id'))
+    cell: ({ row }) => h('div', { class: 'text-left' }, row.getValue('id')),
   },
   {
     accessorKey: 'name',
@@ -19,36 +19,36 @@ export const columns: ColumnDef<Drinks[0]>[] = [
         RouterLink,
         {
           to: `/drinks/${slug}`,
-          class: 'text-left font-medium hover:bg-muted block w-full'
+          class: 'text-left font-medium hover:bg-muted block w-full',
         },
-        () => row.getValue('name')
+        () => row.getValue('name'),
       )
-    }
+    },
   },
   {
     accessorKey: 'slug',
     header: () => h('div', { class: 'text-left' }, 'Slug'),
-    cell: ({ row }) => h('div', { class: 'text-left' }, row.getValue('slug'))
+    cell: ({ row }) => h('div', { class: 'text-left' }, row.getValue('slug')),
   },
   {
     accessorKey: 'category',
     header: () => h('div', { class: 'text-left' }, 'Category'),
-    cell: ({ row }) => h('div', { class: 'text-left' }, row.getValue('category'))
+    cell: ({ row }) => h('div', { class: 'text-left' }, row.getValue('category')),
   },
   {
     accessorKey: 'alcoholic',
     header: () => h('div', { class: 'text-left' }, 'Alcoholic'),
-    cell: ({ row }) => h('div', { class: 'text-left' }, row.getValue('alcoholic'))
+    cell: ({ row }) => h('div', { class: 'text-left' }, row.getValue('alcoholic')),
   },
   {
     accessorKey: 'glass',
     header: () => h('div', { class: 'text-left' }, 'Glass'),
-    cell: ({ row }) => h('div', { class: 'text-left' }, row.getValue('glass'))
+    cell: ({ row }) => h('div', { class: 'text-left' }, row.getValue('glass')),
   },
   {
     accessorKey: 'active',
     header: () => h('div', { class: 'text-left' }, 'Active'),
-    cell: ({ row }) => h('div', { class: 'text-left' }, row.getValue('active'))
+    cell: ({ row }) => h('div', { class: 'text-left' }, row.getValue('active')),
   },
   {
     accessorKey: 'price',
@@ -62,26 +62,27 @@ export const columns: ColumnDef<Drinks[0]>[] = [
   {
     accessorKey: 'instructions',
     header: () => h('div', { class: 'text-left' }, 'Instructions'),
-    cell: ({ row }) => h('div', { class: 'text-left' }, row.getValue('instructions'))
+    cell: ({ row }) => h('div', { class: 'text-left' }, row.getValue('instructions')),
   },
   {
     accessorKey: 'thumb_url',
     header: () => h('div', { class: 'text-left' }, 'Thumbnail'),
-    cell: ({ row }) => h('img', { src: row.getValue('thumb_url'), class: 'h-10 w-10 object-cover' })
+    cell: ({ row }) =>
+      h('img', { src: row.getValue('thumb_url'), class: 'h-10 w-10 object-cover' }),
   },
   {
     accessorKey: 'measurements',
     header: () => h('div', { class: 'text-left' }, 'Measurements'),
-    cell: ({ row }) => h('div', { class: 'text-left' }, row.getValue('measurements'))
+    cell: ({ row }) => h('div', { class: 'text-left' }, row.getValue('measurements')),
   },
   {
     accessorKey: 'ingredients',
     header: () => h('div', { class: 'text-left' }, 'Ingredients'),
-    cell: ({ row }) => h('div', { class: 'text-left' }, row.getValue('ingredients'))
+    cell: ({ row }) => h('div', { class: 'text-left' }, row.getValue('ingredients')),
   },
   {
     accessorKey: 'last_modified',
     header: () => h('div', { class: 'text-left' }, 'Last Modified'),
-    cell: ({ row }) => h('div', { class: 'text-left' }, row.getValue('last_modified'))
-  }
+    cell: ({ row }) => h('div', { class: 'text-left' }, row.getValue('last_modified')),
+  },
 ]

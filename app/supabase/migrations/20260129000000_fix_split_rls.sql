@@ -10,7 +10,7 @@ CREATE POLICY "Users can create splits for their tabs" ON public.tab_split
         user_id = auth.uid() OR 
         EXISTS (
           SELECT 1 FROM public.profile 
-          WHERE id = auth.uid() AND user_role = 'admin'
+          WHERE id = auth.uid() AND user_role = 'admin' -- NOSONAR
         )
       )
     ));

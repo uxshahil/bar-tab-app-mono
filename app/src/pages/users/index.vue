@@ -4,6 +4,7 @@ import { useUsersStore } from '@/stores/loaders/users'
 import { storeToRefs } from 'pinia'
 import AppUserSheet from '@/components/app/users/AppUserSheet.vue'
 import AppResourcePage from '@/components/common/AppResourcePage.vue'
+import type { Profile } from '@/services/supabase/types/profileTypes'
 
 import { useRoute } from 'vue-router'
 import { watch } from 'vue'
@@ -16,14 +17,17 @@ const route = useRoute()
 usersStore.getUsers(route.query.search as string)
 
 // Watch search
-watch(() => route.query.search, (newSearch) => {
-  usersStore.getUsers(newSearch as string)
-})
+watch(
+  () => route.query.search,
+  (newSearch) => {
+    usersStore.getUsers(newSearch as string)
+  },
+)
 
 const isUserSheetOpen = ref(false)
-const editingUser = ref<any>(null)
+const editingUser = ref<Profile | null>(null)
 
-const onEditUser = (user: any) => {
+const onEditUser = (user: Profile) => {
   editingUser.value = user
   isUserSheetOpen.value = true
 }
@@ -42,16 +46,16 @@ const onRefresh = async () => {
     pagination-key="users-table"
     :options="{
       meta: {
-          onEditUser
-      }
+        onEditUser,
+      },
     }"
   >
     <template #sheet>
       <AppUserSheet
-          v-model:open="isUserSheetOpen"
-          :user-to-edit="editingUser"
-          @close="editingUser = null"
-          @refresh="onRefresh"
+        v-model:open="isUserSheetOpen"
+        :user-to-edit="editingUser"
+        @close="editingUser = null"
+        @refresh="onRefresh"
       />
     </template>
   </AppResourcePage>

@@ -19,11 +19,13 @@ const { profile } = storeToRefs(authStore)
 
 const initialTabNumber = ref('')
 
-const formSchema = toTypedSchema(z.object({
-  tab_number: z.string(),
-  user_id: z.string(),
-  special_notes: z.string().max(500, 'Max 500 characters').optional(),
-}))
+const formSchema = toTypedSchema(
+  z.object({
+    tab_number: z.string(),
+    user_id: z.string(),
+    special_notes: z.string().max(500, 'Max 500 characters').optional(),
+  }),
+)
 
 const form = useForm({
   validationSchema: formSchema,
@@ -33,12 +35,12 @@ const form = useForm({
 const generateTabNumber = async () => {
   const { count } = await todaysTabsCountQuery()
   const nextCount = (count || 0) + 1
-  
+
   const today = new Date()
   const month = (today.getMonth() + 1).toString().padStart(2, '0')
   const day = today.getDate().toString().padStart(2, '0')
   const sequence = nextCount.toString().padStart(4, '0')
-  
+
   return `TAB-${month}${day}-${sequence}`
 }
 
@@ -104,7 +106,7 @@ const onSubmit = form.handleSubmit(async (values) => {
                 :placeholder="profile?.full_name || 'Current User'"
               />
             </FormControl>
-             <p class="text-xs text-muted-foreground pl-1">
+            <p class="text-xs text-muted-foreground pl-1">
               Tab assigned to: {{ profile?.full_name }}
             </p>
             <FormMessage />

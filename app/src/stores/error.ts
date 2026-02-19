@@ -7,28 +7,28 @@ const isCustomError = ref(false)
 export const useErrorStore = defineStore('error-store', () => {
   const setError = ({
     error,
-    customCode
+    customCode,
   }: {
     error: string | PostgrestError | Error
     customCode?: number
   }) => {
     if (typeof error === 'string') {
-      activeError.value = { 
-         message: error, 
-         code: customCode?.toString() || 'UNKNOWN',
-         details: '',
-         hint: '',
-         statusCode: customCode
+      activeError.value = {
+        message: error,
+        code: customCode?.toString() || 'UNKNOWN',
+        details: '',
+        hint: '',
+        statusCode: customCode,
       } as ExtendedPostgrestError
       isCustomError.value = true
       return
     }
 
     if (error instanceof Error) {
-        const customError = error as CustomError
-        customError.customCode = customCode
-        activeError.value = customError
-        return
+      const customError = error as CustomError
+      customError.customCode = customCode
+      activeError.value = customError
+      return
     }
 
     const extendedPostgrestError = error as ExtendedPostgrestError
@@ -45,7 +45,7 @@ export const useErrorStore = defineStore('error-store', () => {
     activeError,
     setError,
     clearError,
-    isCustomError
+    isCustomError,
   }
 })
 

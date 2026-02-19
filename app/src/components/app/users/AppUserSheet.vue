@@ -7,7 +7,13 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
@@ -27,22 +33,28 @@ const selectOptions = {
     { label: 'Admin', value: 'admin' },
     { label: 'Bar Staff', value: 'bar-staff' },
     { label: 'Bar Manager', value: 'bar-manager' },
-  ]
+  ],
 }
 
-const formSchema = computed(() => toTypedSchema(z.object({
-  firstName: z.string().min(1, 'First name is required').max(255),
-  lastName: z.string().min(1, 'Last name is required').max(255),
-  username: z.string().min(1, 'Username is required').max(255),
-  email: z.string().email('Invalid email address'),
-  password: isEditing.value 
-    ? z.string().min(8, 'Password must be at least 8 characters').optional().or(z.literal('')) 
-    : z.string().min(8, 'Password must be at least 8 characters'),
-  pin: z.string().regex(/^\d{4}$/, 'PIN must be exactly 4 digits'),
-  user_role: z.enum(['admin', 'bar-staff', 'bar-manager'], { errorMap: () => ({ message: 'Please select a role' }) }),
-  bio: z.string().max(500).optional(),
-  avatar_url: z.string().url('Invalid URL').optional().or(z.literal('')),
-})))
+const formSchema = computed(() =>
+  toTypedSchema(
+    z.object({
+      firstName: z.string().min(1, 'First name is required').max(255),
+      lastName: z.string().min(1, 'Last name is required').max(255),
+      username: z.string().min(1, 'Username is required').max(255),
+      email: z.string().email('Invalid email address'),
+      password: isEditing.value
+        ? z.string().min(8, 'Password must be at least 8 characters').optional().or(z.literal(''))
+        : z.string().min(8, 'Password must be at least 8 characters'),
+      pin: z.string().regex(/^\d{4}$/, 'PIN must be exactly 4 digits'),
+      user_role: z.enum(['admin', 'bar-staff', 'bar-manager'], {
+        errorMap: () => ({ message: 'Please select a role' }),
+      }),
+      bio: z.string().max(500).optional(),
+      avatar_url: z.string().url('Invalid URL').optional().or(z.literal('')),
+    }),
+  ),
+)
 
 const form = useForm({
   validationSchema: formSchema,
@@ -64,14 +76,14 @@ watch(
         pin: newUser.pin ? String(newUser.pin) : '',
         user_role: newUser.user_role as 'admin' | 'bar-staff' | 'bar-manager',
         bio: newUser.bio || '',
-        avatar_url: newUser.avatar_url || ''
+        avatar_url: newUser.avatar_url || '',
       })
     } else {
-        // Reset form for create mode
-        form.resetForm()
+      // Reset form for create mode
+      form.resetForm()
     }
   },
-  { immediate: true }
+  { immediate: true },
 )
 
 const onSubmit = form.handleSubmit(async (values) => {
@@ -79,30 +91,28 @@ const onSubmit = form.handleSubmit(async (values) => {
     ...values,
     full_name: `${values.firstName} ${values.lastName}`,
     // Ensure numeric pin string
-    pin: values.pin
+    pin: values.pin,
   }
 
   try {
     if (isEditing.value && props.userToEdit) {
-        console.log('Updating user:', props.userToEdit.id)
-        
-        // Only include password if provided
-        if (!userData.password) delete userData.password
-        
-        // Sanitize data for profile table (remove non-columns)
-        const { firstName, lastName, ...cleanData } = userData
-        
-        const editPayload: EditUser = {
-            id: props.userToEdit.id,
-            data: cleanData
-        }
-        await profileApi.editProfile(editPayload)
-        emit('refresh')
+      // Only include password if provided
+      if (!userData.password) delete userData.password
+
+      // Sanitize data for profile table (remove non-columns)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { firstName: _firstName, lastName: _lastName, ...cleanData } = userData
+
+      const editPayload: EditUser = {
+        id: props.userToEdit.id,
+        data: cleanData,
+      }
+      await profileApi.editProfile(editPayload)
+      emit('refresh')
     } else {
-        console.log('Creating user')
-        // Ensure password is present for creation (it is required by schema, but types might need assertion)
-        await profileApi.createProfile(userData as CreateNewUser)
-        emit('refresh')
+      // Ensure password is present for creation (it is required by schema, but types might need assertion)
+      await profileApi.createProfile(userData as CreateNewUser)
+      emit('refresh')
     }
     sheetOpen.value = false
     emit('close')
@@ -130,7 +140,7 @@ const onSubmit = form.handleSubmit(async (values) => {
               <FormMessage />
             </FormItem>
           </FormField>
-          
+
           <FormField v-slot="{ componentField }" name="lastName">
             <FormItem>
               <FormLabel>Last Name</FormLabel>
@@ -156,7 +166,12 @@ const onSubmit = form.handleSubmit(async (values) => {
           <FormItem>
             <FormLabel>Email</FormLabel>
             <FormControl>
-              <Input v-bind="componentField" placeholder="Enter email" type="email" :disabled="isEditing" />
+              <Input
+                v-bind="componentField"
+                placeholder="Enter email"
+                type="email"
+                :disabled="isEditing"
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -192,7 +207,11 @@ const onSubmit = form.handleSubmit(async (values) => {
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                <SelectItem v-for="option in selectOptions.roles" :key="option.value" :value="option.value">
+                <SelectItem
+                  v-for="option in selectOptions.roles"
+                  :key="option.value"
+                  :value="option.value"
+                >
                   {{ option.label }}
                 </SelectItem>
               </SelectContent>

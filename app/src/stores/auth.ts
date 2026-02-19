@@ -17,7 +17,7 @@ export const useAuthStore = defineStore('auth-store', () => {
     if (!profile.value || profile.value.id !== user.value.id) {
       const { data } = await profileQuery({
         column: 'id',
-        value: user.value.id
+        value: user.value.id,
       })
 
       profile.value = data || null
@@ -53,7 +53,7 @@ export const useAuthStore = defineStore('auth-store', () => {
 
   const profileInitials = (fullName: string = profile.value?.full_name ?? '') => {
     const names = fullName.split(' ')
-    const initials = names.map(name => name.charAt(0).toUpperCase()).join('')
+    const initials = names.map((name) => name.charAt(0).toUpperCase()).join('')
     return initials ?? 'NA'
   }
 
@@ -63,7 +63,7 @@ export const useAuthStore = defineStore('auth-store', () => {
     setAuth,
     getSession,
     trackAuthChanges,
-    profileInitials
+    profileInitials,
   }
 })
 

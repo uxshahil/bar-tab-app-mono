@@ -4,11 +4,12 @@
 
 API_BASE="https://www.thecocktaildb.com/api/json/v1/1"
 OUTPUT_DIR="./api_data"
+SEPARATOR="========================================"
 mkdir -p "$OUTPUT_DIR"
 
-echo "========================================"
+echo "$SEPARATOR"
 echo "Complete CocktailDB Data Fetcher"
-echo "========================================"
+echo "$SEPARATOR"
 
 echo "1. Downloading all basic lists..."
 echo "   - Categories..."
@@ -24,7 +25,7 @@ CATEGORIES_FILE="$OUTPUT_DIR/menu_category.json"
 
 # Check if we got a valid response
 if ! grep -q '"drinks"' "$CATEGORIES_FILE"; then
-    echo "ERROR: Invalid API response for categories"
+    echo "ERROR: Invalid API response for categories" >&2
     cat "$CATEGORIES_FILE"
     exit 1
 fi
@@ -64,8 +65,8 @@ else
 fi
 
 # Check if we got categories
-if [ ${#categories[@]} -eq 0 ]; then
-    echo "ERROR: No categories extracted. Raw response:"
+if [[ ${#categories[@]} -eq 0 ]]; then
+    echo "ERROR: No categories extracted. Raw response:" >&2
     cat "$CATEGORIES_FILE"
     exit 1
 fi
@@ -107,7 +108,7 @@ for category in "${categories[@]}"; do
         # Extract drinks array
         drinks=$(echo "$response" | sed 's/^{"drinks":\[//' | sed 's/\]}$//')
         
-        if [ -n "$drinks" ] && echo "$drinks" | grep -q '"strDrink"'; then
+        if [[ -n "$drinks" ]] && echo "$drinks" | grep -q '"strDrink"'; then
             # Create category-specific file
             safe_category_name=$(echo "$category" | sed 's/[\/ ]/_/g')
             CATEGORY_DRINKS_FILE="$DRINKS_BY_CATEGORY_DIR/${safe_category_name}.json"
@@ -120,7 +121,7 @@ for category in "${categories[@]}"; do
             first_in_category=true
             
             while IFS= read -r drink; do
-                if [ -n "$drink" ]; then
+                if [[ -n "$drink" ]]; then
                     # Clean up the drink object
                     drink=$(echo "$drink" | sed 's/,$//')
                     
@@ -133,7 +134,7 @@ for category in "${categories[@]}"; do
                     fi
                     
                     # Add to combined JSON (all drinks)
-                    if [ "$first" = true ]; then
+                    if [[ "$first" == true ]]; then
                         echo "$drink_with_cat" >> "$ALL_DRINKS_FILE"
                         first=false
                     else
@@ -141,7 +142,7 @@ for category in "${categories[@]}"; do
                     fi
                     
                     # Add to category-specific JSON
-                    if [ "$first_in_category" = true ]; then
+                    if [[ "$first_in_category" == true ]]; then
                         echo "$drink_with_cat" >> "$CATEGORY_DRINKS_FILE"
                         first_in_category=false
                     else
@@ -155,7 +156,7 @@ for category in "${categories[@]}"; do
             # Close category file
             echo "]}" >> "$CATEGORY_DRINKS_FILE"
             
-            if [ $drink_count -gt 0 ]; then
+            if [[ $drink_count -gt 0 ]]; then
                 total_drinks=$((total_drinks + drink_count))
                 processed_categories=$((processed_categories + 1))
                 echo "     ✓ Found $drink_count drinks (saved to ${safe_category_name}.json)"
@@ -201,7 +202,7 @@ EOF
 for category in "${categories[@]}"; do
     safe_name=$(echo "$category" | sed 's/[\/ ]/_/g')
     category_file="$DRINKS_BY_CATEGORY_DIR/${safe_name}.json"
-    if [ -f "$category_file" ]; then
+    if [[ -f "$category_file" ]]; then
         count=$(grep -c '"strDrink"' "$category_file" 2>/dev/null || echo "0")
         echo "  - $category: $count drinks" >> "$SUMMARY_FILE"
     else
@@ -225,16 +226,16 @@ Sample drinks (first 3):
 EOF
 
 # Show first 3 drinks
-if [ -s "$ALL_DRINKS_FILE" ]; then
+if [[ -s "$ALL_DRINKS_FILE" ]]; then
     head -50 "$ALL_DRINKS_FILE" | grep -o '{"[^}]*}[^,]*' | head -3 | while read -r drink; do
         echo "" >> "$VERIFICATION_FILE"
         echo "$drink" | sed 's/,/,\n  /g' >> "$VERIFICATION_FILE"
     done
 fi
 
-echo "========================================"
+echo "$SEPARATOR"
 echo "DOWNLOAD COMPLETE!"
-echo "========================================"
+echo "$SEPARATOR"
 echo "All data has been downloaded successfully!"
 echo ""
 echo "📁 OUTPUT DIRECTORY: $OUTPUT_DIR/"
@@ -254,10 +255,10 @@ echo "    • summary.txt          - Complete summary"
 echo "    • verification.txt     - Data verification"
 echo ""
 echo "🔍 SAMPLE OUTPUT:"
-if [ -s "$ALL_DRINKS_FILE" ]; then
+if [[ -s "$ALL_DRINKS_FILE" ]]; then
     # Show first complete drink object
     first_drink=$(head -30 "$ALL_DRINKS_FILE" | grep -o '{"[^}]*}[^,]*' | head -1)
-    if [ -n "$first_drink" ]; then
+    if [[ -n "$first_drink" ]]; then
         echo "$first_drink" | sed 's/,/,\n  /g'
     fi
 fi

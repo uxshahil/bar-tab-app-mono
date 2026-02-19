@@ -14,8 +14,8 @@ export interface CreateNewUser {
 
 // Interface for editing an existing user
 // Allows partial updates of CreateNewUser fields
-export interface EditUser { 
-  id: string, // Unique identifier for the user
+export interface EditUser {
+  id: string // Unique identifier for the user
   data: Partial<CreateNewUser> // Partial allows optional updates
 }
 

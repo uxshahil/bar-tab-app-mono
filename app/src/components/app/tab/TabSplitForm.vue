@@ -8,14 +8,18 @@ import {
   DialogClose,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+
+import { toTypedSchema } from '@vee-validate/zod'
+import { useForm } from 'vee-validate'
+import * as z from 'zod'
 
 interface Props {
   tabId: number
 }
 
-interface Emits {
-  (e: 'split-created'): void
-}
+type Emits = (e: 'split-created') => void
 
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
@@ -23,37 +27,48 @@ const emit = defineEmits<Emits>()
 const tabsStore = useTabsStore()
 const vat = Number(import.meta.env.VITE_VAT) || 0.15
 
-const formData = ref({
-  splitNumber: 2,
-  itemsIncluded: [] as string[],
-  subtotal: 0,
-  taxOnSplit: 0,
-  totalOwed: 0,
+const formSchema = toTypedSchema(
+  z.object({
+    splitNumber: z.number().min(1, 'Split number must be at least 1'),
+    subtotal: z.number().min(0.01, 'Subtotal must be greater than 0'),
+  }),
+)
+
+const form = useForm({
+  validationSchema: formSchema,
+  initialValues: {
+    splitNumber: 2,
+    subtotal: 0,
+  },
 })
 
-const createSplit = async () => {
-  if (formData.value.subtotal <= 0) {
-    console.error('Subtotal must be greater than 0')
-    return
-  }
+// Calculations for display
+const taxAmount = computed(() => {
+  return (form.values.subtotal || 0) * vat
+})
 
+const totalOwed = computed(() => {
+  return (form.values.subtotal || 0) + taxAmount.value
+})
+
+const onSubmit = form.handleSubmit(async (values) => {
   try {
-    const tax = formData.value.subtotal * 0.15
+    const tax = values.subtotal * vat
 
     await tabsStore.createTabSplit({
       tab_id: props.tabId,
-      split_number: formData.value.splitNumber,
-      items_included: formData.value.itemsIncluded,
-      subtotal: formData.value.subtotal,
+      split_number: values.splitNumber,
+      items_included: [], // Was empty in original formData default
+      subtotal: values.subtotal,
       tax_on_split: tax,
-      total_owed: formData.value.subtotal + tax,
+      total_owed: values.subtotal + tax,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any)
 
     // Update tab to mark as split
     await tabsStore.updateTab(props.tabId, {
       is_split: true,
-      split_count: formData.value.splitNumber,
+      split_count: values.splitNumber,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any)
 
@@ -61,7 +76,7 @@ const createSplit = async () => {
   } catch (error) {
     console.error('Error creating split:', error)
   }
-}
+})
 </script>
 
 <template>
@@ -71,63 +86,52 @@ const createSplit = async () => {
         <DialogTitle>Create Bill Split</DialogTitle>
       </DialogHeader>
 
-      <div class="space-y-4 py-4">
+      <form @submit="onSubmit" class="space-y-4 py-4">
         <!-- Split Number -->
-        <div class="space-y-2">
-          <label class="text-sm font-medium">Split Number</label>
-          <input
-            v-model.number="formData.splitNumber"
-            type="number"
-            min="1"
-            class="w-full p-2 border rounded-md"
-          />
-          <p class="text-xs text-muted-foreground">
-            Enter the split number (e.g., 1, 2, 3 for 3-way split)
-          </p>
-        </div>
+        <FormField v-slot="{ componentField }" name="splitNumber">
+          <FormItem>
+            <FormLabel>Split Number</FormLabel>
+            <FormControl>
+              <Input type="number" v-bind="componentField" />
+            </FormControl>
+            <FormMessage />
+            <p class="text-xs text-muted-foreground">
+              Enter the split number (e.g., 1, 2, 3 for 3-way split)
+            </p>
+          </FormItem>
+        </FormField>
 
         <!-- Subtotal for this Split -->
-        <div class="space-y-2">
-          <label class="text-sm font-medium">Subtotal for this Split</label>
-          <input
-            v-model.number="formData.subtotal"
-            type="number"
-            step="0.01"
-            class="w-full p-2 border rounded-md"
-            placeholder="0.00"
-          />
-        </div>
+        <FormField v-slot="{ componentField }" name="subtotal">
+          <FormItem>
+            <FormLabel>Subtotal for this Split</FormLabel>
+            <FormControl>
+              <Input type="number" step="0.01" placeholder="0.00" v-bind="componentField" />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </FormField>
 
         <!-- Tax Calculation -->
         <div class="space-y-2">
-          <label class="text-sm font-medium">Tax ({vat}%)</label>
-          <input
-            :value="(formData.subtotal * vat).toFixed(2)"
-            type="text"
-            disabled
-            class="w-full p-2 border rounded-md bg-muted"
-          />
+          <FormLabel>Tax ({{ vat * 100 }}%)</FormLabel>
+          <Input :value="taxAmount.toFixed(2)" type="text" disabled class="bg-muted" />
         </div>
 
         <!-- Total Owed -->
         <div class="space-y-2">
-          <label class="text-sm font-medium">Total Owed (including tax)</label>
-          <input
-            :value="(formData.subtotal * 1.15).toFixed(2)"
-            type="text"
-            disabled
-            class="w-full p-2 border rounded-md bg-muted font-bold"
-          />
+          <FormLabel>Total Owed (including tax)</FormLabel>
+          <Input :value="totalOwed.toFixed(2)" type="text" disabled class="bg-muted font-bold" />
         </div>
 
         <!-- Actions -->
         <div class="flex gap-2 pt-4">
-          <Button @click="createSplit" class="flex-1">Create Split</Button>
+          <Button type="submit" class="flex-1">Create Split</Button>
           <DialogClose as-child>
             <Button variant="outline" class="flex-1">Cancel</Button>
           </DialogClose>
         </div>
-      </div>
+      </form>
     </DialogContent>
   </Dialog>
 </template>

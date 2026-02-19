@@ -3,6 +3,7 @@ import { ref, nextTick, computed } from 'vue'
 import { formatCurrency } from '@/utils/currency'
 import { useAuthStore } from '@/stores/auth'
 import { storeToRefs } from 'pinia'
+import { Input } from '@/components/ui/input'
 
 const props = defineProps<{
   value: number
@@ -10,7 +11,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'update', id: number, newValue: number): void
+  update: [id: number, newValue: number]
 }>()
 
 const authStore = useAuthStore()
@@ -28,7 +29,7 @@ const canEditPrice = computed(() => {
 const startEditing = async () => {
   // Only allow editing if user has the required role
   if (!canEditPrice.value) return
-  
+
   editValue.value = props.value
   isEditing.value = true
   await nextTick()
@@ -62,17 +63,21 @@ const cancel = () => {
       :title="canEditPrice ? 'Click to edit' : 'Only bar-manager and admin can edit prices'"
     >
       {{ formatCurrency(value) }}
-      <span v-if="canEditPrice" class="opacity-0 group-hover:opacity-40 text-[10px] ml-1 absolute right-full top-1/2 -translate-y-1/2 pr-1">✎</span>
+      <span
+        v-if="canEditPrice"
+        class="opacity-0 group-hover:opacity-40 text-[10px] ml-1 absolute right-full top-1/2 -translate-y-1/2 pr-1"
+        >✎</span
+      >
     </div>
     <div v-else class="flex items-center w-24">
-      <input
+      <Input
         ref="inputRef"
         :id="`price-input-${id}`"
         v-model="editValue"
         type="number"
         step="0.01"
         min="0"
-        class="flex h-8 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 text-right"
+        class="h-8 text-right"
         @blur="save"
         @keydown.enter="save"
         @keydown.esc="cancel"

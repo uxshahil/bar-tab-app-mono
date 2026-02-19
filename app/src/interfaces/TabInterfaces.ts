@@ -1,12 +1,14 @@
 // interfaces/TabInterfaces.ts
 
+export type TabStatus = 'open' | 'closed' | 'pending'
+
 // Interface for creating a new tab with required fields and specific types
 export interface CreateNewTab {
   tab_number: string // Auto-generated unique tab number
   user_id: string // ID of the user assigned to the tab
   bar_id?: string // Optional bar ID where tab is opened
   special_notes?: string // Optional special instructions or notes
-  status?: 'open' | 'closed' | 'pending' // Tab status, defaults to 'open'
+  status?: TabStatus // Tab status, defaults to 'open'
   subtotal?: number // Initial subtotal, defaults to 0
   tax_amount?: number // Tax amount, defaults to 0
   total_before_tip?: number // Total before tip, defaults to 0
@@ -23,7 +25,7 @@ export interface Tab {
   user_id: string // ID of the user assigned to the tab
   bar_id: string | null // Bar ID where tab is opened (nullable)
   special_notes: string | null // Optional special instructions or notes
-  status: 'open' | 'closed' | 'pending' // Current tab status
+  status: TabStatus // Current tab status
   subtotal: number // Current subtotal
   tax_amount: number // Tax amount
   total_before_tip: number // Total before tip
@@ -57,7 +59,7 @@ export interface AddTabItem {
 // Interface for updating tab status
 export interface UpdateTabStatus {
   id: string // ID of the tab
-  status: 'open' | 'closed' | 'pending' // New status for the tab
+  status: TabStatus // New status for the tab
 }
 
 // Interface for tab summary/analytics

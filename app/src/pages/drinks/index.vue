@@ -60,13 +60,13 @@ watch(
       meta: {
         onAddToTab,
         onEditDrink,
-        userRole: authStore.profile?.user_role
-      }
+        userRole: authStore.profile?.user_role,
+      },
     }"
   >
     <template #sheet>
-      <AppDrinkSheet 
-        v-model:open="isDrinkSheetOpen" 
+      <AppDrinkSheet
+        v-model:open="isDrinkSheetOpen"
         :drink-id="editingDrinkId"
         @close="editingDrinkId = null"
       />

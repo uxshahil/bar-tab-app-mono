@@ -11,14 +11,20 @@
       <div class="flex justify-between items-center mb-4">
         <div>
           <h3 class="font-semibold">{{ currentTab.tab_number }}</h3>
-          <p class="text-sm text-muted-foreground">Total: ${{ currentTab.total_owed.toFixed(2) }}</p>
+          <p class="text-sm text-muted-foreground">
+            Total: ${{ currentTab.total_owed.toFixed(2) }}
+          </p>
         </div>
         <Button variant="outline" size="sm" @click="showAddItemSheet = true">Add Item</Button>
       </div>
 
       <!-- Tab Items -->
       <div v-if="tabItems?.length" class="space-y-2">
-        <div v-for="item in tabItems" :key="item.id" class="flex justify-between items-center p-2 bg-muted rounded">
+        <div
+          v-for="item in tabItems"
+          :key="item.id"
+          class="flex justify-between items-center p-2 bg-muted rounded"
+        >
           <div>
             <span class="font-medium">Item #{{ item.menu_item_id }}</span>
             <span class="text-sm text-muted-foreground ml-2">x{{ item.quantity }}</span>
@@ -35,7 +41,7 @@
           <SheetTitle>Create New Tab</SheetTitle>
         </SheetHeader>
         <form @submit="onNewTabSubmit" class="space-y-4 mt-4">
-           <FormField v-slot="{ componentField }" name="tab_number">
+          <FormField v-slot="{ componentField }" name="tab_number">
             <FormItem>
               <FormLabel>Tab Number</FormLabel>
               <FormControl>
@@ -107,7 +113,11 @@
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem v-for="option in drinkOptions" :key="option.value" :value="String(option.value)">
+                  <SelectItem
+                    v-for="option in drinkOptions"
+                    :key="option.value"
+                    :value="String(option.value)"
+                  >
                     {{ option.label }}
                   </SelectItem>
                 </SelectContent>
@@ -158,11 +168,18 @@ import { useTabsStore } from '@/stores/loaders/tabs'
 import { useDrinksStore } from '@/stores/loaders/drinks'
 import { useAuthStore } from '@/stores/auth'
 import { storeToRefs } from 'pinia'
+import type { Tabs } from '@/services/supabase/types/tabTypes'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
@@ -181,23 +198,28 @@ const showAddItemSheet = ref(false)
 
 const generateTabNumber = () => {
   const timestamp = Date.now().toString().slice(-6)
-  const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0')
+  const randomBytes = new Uint32Array(1)
+  crypto.getRandomValues(randomBytes)
+  const random = ((randomBytes[0] ?? 0) % 1000).toString().padStart(3, '0')
   return `TAB-${timestamp}-${random}`
 }
 
-const drinkOptions = computed(() => 
-  drinks.value?.map(drink => ({
-    label: `${drink.name} - $${drink.price?.toFixed(2) || '0.00'}`,
-    value: drink.id
-  })) || []
+const drinkOptions = computed(
+  () =>
+    drinks.value?.map((drink) => ({
+      label: `${drink.name} - $${drink.price?.toFixed(2) || '0.00'}`,
+      value: drink.id,
+    })) || [],
 )
 
 // New Tab Form
-const newTabSchema = toTypedSchema(z.object({
-  tab_number: z.string(),
-  user_id: z.string(),
-  special_notes: z.string().optional(),
-}))
+const newTabSchema = toTypedSchema(
+  z.object({
+    tab_number: z.string(),
+    user_id: z.string(),
+    special_notes: z.string().optional(),
+  }),
+)
 
 const newTabForm = useForm({
   validationSchema: newTabSchema,
@@ -226,10 +248,10 @@ const onNewTabSubmit = newTabForm.handleSubmit(async (values) => {
     // If the input name is user_id, it would be overwritten by the input's value?
     // Actually, if the input is disabled, it might not submit?
     // Let's stick to using profile.value.id for the API call, ignoring what's visibly in the "user_id" field if it's just for display.
-    
+
     // We should probably keep 'user_id' field as the ID if possible, or just use a separate display field.
     // For simplicity, let's assume the form `user_id` field holds the DISPLAY name, and we use profile.id for the API.
-    
+
     bar_id: 1,
     tab_number: values.tab_number,
     special_notes: values.special_notes || null,
@@ -247,52 +269,53 @@ const onNewTabSubmit = newTabForm.handleSubmit(async (values) => {
   }
 })
 
-
 // Add Item Form
-const addItemSchema = toTypedSchema(z.object({
-  menu_item_id: z.string().min(1, 'Select a drink'),
-  quantity: z.number().min(1),
-  unit_price: z.number().min(0),
-  special_instructions: z.string().optional(),
-}))
+const addItemSchema = toTypedSchema(
+  z.object({
+    menu_item_id: z.string().min(1, 'Select a drink'),
+    quantity: z.number().min(1),
+    unit_price: z.number().min(0),
+    special_instructions: z.string().optional(),
+  }),
+)
 
 const addItemForm = useForm({
   validationSchema: addItemSchema,
   initialValues: {
     quantity: 1,
     unit_price: 0,
-  }
+  },
 })
 
 const onAddItemSubmit = addItemForm.handleSubmit(async (values) => {
   if (!currentTab.value) return
 
   const itemTotal = values.quantity * values.unit_price
-  
+
   await tabsStore.addTabItem({
     tab_id: currentTab.value.id,
-    menu_item_id: parseInt(values.menu_item_id),
+    menu_item_id: Number.parseInt(values.menu_item_id),
     quantity: values.quantity,
     unit_price: values.unit_price,
     item_total: itemTotal,
-    special_instructions: values.special_instructions || null
+    special_instructions: values.special_instructions || null,
   })
 
   // Update tab totals
   const newSubtotal = currentTab.value.subtotal + itemTotal
-  const newTotal = (newSubtotal || 0) + (currentTab.value?.tax_amount || 0) + (currentTab.value?.tip_amount || 0)
+  const newTotal =
+    (newSubtotal || 0) + (currentTab.value?.tax_amount || 0) + (currentTab.value?.tip_amount || 0)
 
   await tabsStore.updateTab(currentTab.value.id, {
     subtotal: newSubtotal,
     total_before_tip: newSubtotal + currentTab.value.tax_amount,
-    total_owed: newTotal
+    total_owed: newTotal,
   })
 
   showAddItemSheet.value = false
 })
 
-
-const selectTab = async (tab: any) => {
+const selectTab = async (tab: Tabs[0]) => {
   await tabsStore.getTab(tab.id.toString())
   await tabsStore.getTabItems(tab.id.toString())
   showOpenTabSheet.value = false

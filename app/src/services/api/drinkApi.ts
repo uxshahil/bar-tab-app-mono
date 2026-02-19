@@ -18,12 +18,16 @@ const createDrink = async (drinkData: Partial<CreateNewDrink>) => {
 
 const editDrink = async (drinkData: EditDrink) => {
   try {
-    const response = await axios.put(`${import.meta.env.VITE_API_URL}/update-drink/${drinkData.id}`, drinkData.data, {
-      headers: {
-        apiKey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+    const response = await axios.put(
+      `${import.meta.env.VITE_API_URL}/update-drink/${drinkData.id}`,
+      drinkData.data,
+      {
+        headers: {
+          apiKey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
       },
-    })
+    )
     return response.data
   } catch (error) {
     console.error('Error updating drink:', error)
@@ -33,19 +37,21 @@ const editDrink = async (drinkData: EditDrink) => {
 
 const deleteDrink = async (drink: DeleteDrink) => {
   try {
-    const response = await axios.delete(`${import.meta.env.VITE_API_URL}/delete-drink/${drink.id}`, {
-      headers: {
-        apiKey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+    const response = await axios.delete(
+      `${import.meta.env.VITE_API_URL}/delete-drink/${drink.id}`,
+      {
+        headers: {
+          apiKey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
       },
-    })
+    )
     return response.data
   } catch (error) {
     console.error('Error deleting drink:', error)
     throw error
   }
 }
-
 
 const fetchDrinkById = async (id: string | number) => {
   try {
@@ -56,8 +62,8 @@ const fetchDrinkById = async (id: string | number) => {
       },
     })
     return {
-        data: response.data,
-        isRevalidating: response.headers['x-cache-revalidating'] === 'true'
+      data: response.data,
+      isRevalidating: response.headers['x-cache-revalidating'] === 'true',
     }
   } catch (error) {
     console.error('Error fetching drink:', error)

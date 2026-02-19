@@ -3,10 +3,10 @@ import { routes } from 'vue-router/auto-routes'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes
+  routes,
 })
 
-router.beforeEach(async to => {
+router.beforeEach(async (to) => {
   const authStore = useAuthStore()
   await authStore.getSession()
 
@@ -14,13 +14,13 @@ router.beforeEach(async to => {
 
   if (!authStore.user && !isAuthPage) {
     return {
-      name: '/login'
+      name: '/login',
     }
   }
 
   if (authStore.user && isAuthPage) {
     return {
-      name: '/'
+      name: '/',
     }
   }
 })

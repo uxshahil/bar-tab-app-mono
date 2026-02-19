@@ -24,7 +24,7 @@ const loading = computed(() => pageLoading.value || isRevalidating.value)
 const loadData = async () => {
   // Clear previous state to ensure "loading" skeleton is shown for the new drink
   drinksStore.clearDrink()
-  
+
   pageLoading.value = true
   if (slug.value) {
     await drinksStore.getDrink(slug.value)
@@ -41,9 +41,9 @@ onUnmounted(() => {
 })
 
 watch(slug, (newSlug, oldSlug) => {
-    if (newSlug !== oldSlug) {
-        loadData()
-    }
+  if (newSlug !== oldSlug) {
+    loadData()
+  }
 })
 
 const safeDate = computed(() => {
@@ -51,53 +51,62 @@ const safeDate = computed(() => {
   return new Date(drink.value.created_at).toLocaleDateString()
 })
 
+const parseJsonInstructions = (text: string): string[] | null => {
+  if (!text.trim().startsWith('[')) return null
+  try {
+    const parsed = JSON.parse(text)
+    if (Array.isArray(parsed)) return parsed
+  } catch (e) {
+    console.warn('Failed to parse instructions JSON:', e)
+  }
+  return null
+}
+
+const parseNumberedList = (raw: string): string[] | null => {
+  if (!/\d{1,4}\.\s{0,10}/.test(raw)) return null
+  const parts = raw.split(/(\d{1,4}\.\s{0,10})/).filter((p) => p.trim())
+  const steps: string[] = []
+  let i = 0
+  while (i < parts.length) {
+    const current = parts[i]
+    if (current && /^\d{1,4}\.\s{0,10}$/.test(current)) {
+      if (parts[i + 1]) {
+        steps.push(parts[i + 1]?.trim() || '')
+        i++ // Skip the next part since it's the content
+      }
+    } else if (i === 0 && current && current.trim()) {
+      steps.push(current.trim())
+    }
+    i++
+  }
+  return steps.length > 0 ? steps : null
+}
+
+const parseSentences = (raw: string): string[] | null => {
+  if (!raw.includes('. ')) return null
+  const sentences = raw.split(/\.\s+(?=[A-Z])/).map((s) => s.trim())
+  return sentences.length > 1 ? sentences : null
+}
+
 const parsedInstructions = computed(() => {
   if (!drink.value?.instructions) return []
-
   const text = drink.value.instructions
 
   // 1. Try JSON Parse (New Format)
-  if (text.trim().startsWith('[')) {
-    try {
-      const parsed = JSON.parse(text)
-      if (Array.isArray(parsed)) return parsed
-    } catch (e) {
-      // Fallthrough to text parsing if invalid JSON
-      console.warn('Failed to parse instructions JSON:', e)
-    }
-  }
+  const jsonParsed = parseJsonInstructions(text)
+  if (jsonParsed) return jsonParsed
 
-  // 2. Enhanced List Parsing (Frontend Fallback)
   const raw = text.trim()
 
-  // Pattern A: Numbered Lists (e.g. "1. Step 2.Step")
-  // Handles "1. ", "1.", and missing spaces like "2.Step"
-  if (/\d+\.\s*/.test(raw)) {
-    const parts = raw.split(/(\d+\.\s*)/).filter((p) => p.trim())
-    const steps = []
-    for (let i = 0; i < parts.length; i++) {
-      const current = parts[i]
-      if (current && /^\d+\.\s*$/.test(current)) {
-        if (parts[i + 1]) {
-          steps.push(parts[i + 1]?.trim())
-          i++
-        }
-      } else if (i === 0 && current && current.trim()) {
-        // Text before the first number?
-        steps.push(current.trim())
-      }
-    }
-    if (steps.length > 0) return steps
-  }
+  // 2. Enhanced List Parsing
+  const listParsed = parseNumberedList(raw)
+  if (listParsed) return listParsed
 
-  // Pattern B: Sentence Splitting (e.g. "Mix. Pour.")
-  // Split by Period + Space + Uppercase Letter to avoid "oz. vodka"
-  if (raw.includes('. ')) {
-    const sentences = raw.split(/\.\s+(?=[A-Z])/).map((s) => s.trim())
-    if (sentences.length > 1) return sentences
-  }
+  // 3. Sentence Splitting
+  const sentenceParsed = parseSentences(raw)
+  if (sentenceParsed) return sentenceParsed
 
-  // 3. Fallback: Newlines
+  // 4. Fallback: Newlines
   if (text.includes('\n')) {
     return text.split('\n').filter((step: string) => step.trim().length > 0)
   }
@@ -139,9 +148,7 @@ const handleAddToTab = () => {
 </script>
 
 <template>
-  <div
-    class="min-h-screen text-primary p-6 md:p-12 font-serif bg-cover bg-center bg-fixed"
-  >
+  <div class="min-h-screen text-primary p-6 md:p-12 font-serif bg-cover bg-center bg-fixed">
     <div v-if="loading && !drink" class="max-w-4xl mx-auto space-y-16">
       <!-- Full Page Skeleton (Initial Load / No Data) -->
       <header
@@ -155,38 +162,38 @@ const handleAddToTab = () => {
           </div>
           <Skeleton class="h-16 md:h-20 w-3/4 bg-primary/10" />
           <div class="flex flex-row justify-between pt-2">
-             <div class="flex gap-4">
-                <Skeleton class="h-4 w-32 bg-primary/10" />
-                <Skeleton class="h-4 w-16 bg-primary/10" />
-             </div>
-             <Skeleton class="h-10 w-32 rounded-full bg-primary/10" />
+            <div class="flex gap-4">
+              <Skeleton class="h-4 w-32 bg-primary/10" />
+              <Skeleton class="h-4 w-16 bg-primary/10" />
+            </div>
+            <Skeleton class="h-10 w-32 rounded-full bg-primary/10" />
           </div>
         </div>
         <div class="md:absolute md:top-0 md:right-0">
-           <Skeleton class="w-24 h-24 rounded-full bg-primary/10" />
+          <Skeleton class="w-24 h-24 rounded-full bg-primary/10" />
         </div>
       </header>
 
       <div class="grid grid-cols-1 md:grid-cols-12 gap-12">
         <div class="md:col-span-4 space-y-12">
-           <div>
-              <Skeleton class="h-4 w-32 mb-6 bg-primary/10" />
-              <div class="space-y-4">
-                 <div v-for="i in 5" :key="i" class="flex gap-3">
-                    <Skeleton class="h-4 w-12 bg-primary/10" />
-                    <Skeleton class="h-4 w-full bg-primary/10" />
-                 </div>
+          <div>
+            <Skeleton class="h-4 w-32 mb-6 bg-primary/10" />
+            <div class="space-y-4">
+              <div v-for="i in 5" :key="i" class="flex gap-3">
+                <Skeleton class="h-4 w-12 bg-primary/10" />
+                <Skeleton class="h-4 w-full bg-primary/10" />
               </div>
-           </div>
+            </div>
+          </div>
         </div>
         <div class="md:col-span-8">
-           <Skeleton class="h-4 w-48 mb-6 bg-primary/10" />
-           <div class="space-y-6">
-              <Skeleton class="h-6 w-full bg-primary/10" />
-              <Skeleton class="h-6 w-11/12 bg-primary/10" />
-              <Skeleton class="h-6 w-full bg-primary/10" />
-              <Skeleton class="h-6 w-3/4 bg-primary/10" />
-           </div>
+          <Skeleton class="h-4 w-48 mb-6 bg-primary/10" />
+          <div class="space-y-6">
+            <Skeleton class="h-6 w-full bg-primary/10" />
+            <Skeleton class="h-6 w-11/12 bg-primary/10" />
+            <Skeleton class="h-6 w-full bg-primary/10" />
+            <Skeleton class="h-6 w-3/4 bg-primary/10" />
+          </div>
         </div>
       </div>
     </div>
@@ -261,7 +268,7 @@ const handleAddToTab = () => {
           <div
             class="w-24 h-24 flex items-center justify-center border border-solid border-primary/30 rounded-full hover:rotate-12 transition-transform duration-500 cursor-help"
           >
-            <img :src="drink.thumb_url" class="w-full h-full rounded-full" />
+            <img :src="drink.thumb_url" :alt="drink.name" class="w-full h-full rounded-full" />
           </div>
         </div>
       </header>
@@ -276,15 +283,15 @@ const handleAddToTab = () => {
               Components
             </h2>
 
-             <!-- Loading Skeleton for Differential Data -->
-             <div v-if="loading && (!drink.ingredients || drink.ingredients.length === 0)">
-                 <div class="space-y-4">
-                    <div v-for="i in 5" :key="i" class="flex gap-3">
-                       <Skeleton class="h-4 w-12 bg-primary/10" />
-                       <Skeleton class="h-4 w-full bg-primary/10" />
-                    </div>
-                 </div>
-             </div>
+            <!-- Loading Skeleton for Differential Data -->
+            <div v-if="loading && (!drink.ingredients || drink.ingredients.length === 0)">
+              <div class="space-y-4">
+                <div v-for="i in 5" :key="i" class="flex gap-3">
+                  <Skeleton class="h-4 w-12 bg-primary/10" />
+                  <Skeleton class="h-4 w-full bg-primary/10" />
+                </div>
+              </div>
+            </div>
 
             <div v-else-if="formattedIngredients.length">
               <ul class="space-y-4">
@@ -343,12 +350,12 @@ const handleAddToTab = () => {
 
             <!-- Loading Skeleton for Differential Data -->
             <div v-if="loading && !drink.instructions">
-               <div class="space-y-6">
-                  <Skeleton class="h-6 w-full bg-primary/10" />
-                  <Skeleton class="h-6 w-11/12 bg-primary/10" />
-                  <Skeleton class="h-6 w-full bg-primary/10" />
-                  <Skeleton class="h-6 w-3/4 bg-primary/10" />
-               </div>
+              <div class="space-y-6">
+                <Skeleton class="h-6 w-full bg-primary/10" />
+                <Skeleton class="h-6 w-11/12 bg-primary/10" />
+                <Skeleton class="h-6 w-full bg-primary/10" />
+                <Skeleton class="h-6 w-3/4 bg-primary/10" />
+              </div>
             </div>
 
             <div v-else class="space-y-6">
@@ -383,7 +390,7 @@ const handleAddToTab = () => {
           </div>
         </div>
       </div>
-    </main>   
+    </main>
     <!-- Footer -->
     <footer
       class="pt-8 mt-8 border-t border-primary/10 flex justify-between items-end opacity-40 hover:opacity-100 transition-opacity duration-500"

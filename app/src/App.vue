@@ -70,8 +70,5 @@ useMeta({
     </Component>
   </Transition>
 
-  <AppAddToTab 
-    v-model:open="addToTabStore.isOpen"
-    :drink="addToTabStore.drink"
-  />
+  <AppAddToTab v-model:open="addToTabStore.isOpen" :drink="addToTabStore.drink" />
 </template>

@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
 
-
 interface PaginationState {
   pageIndex: number
   pageSize: number
@@ -29,6 +28,6 @@ export const usePaginationStore = defineStore('pagination-ui', () => {
     tables,
     setPagination,
     getPagination,
-    resetPagination
+    resetPagination,
   }
 })

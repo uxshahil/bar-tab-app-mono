@@ -2,11 +2,23 @@
 import { computed, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import type { CreateNewDrink, EditDrink } from '@/interfaces/DrinkInterfaces'
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet'
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
@@ -27,23 +39,27 @@ const { drinks, drink } = storeToRefs(store)
 
 // Reactively find the drink in the store to ensure we have the latest version
 const drinkToEdit = computed(() => {
-    if (!props.drinkId) return null
-    const fromList = drinks.value?.find(d => String(d.id) === String(props.drinkId))
-    if (fromList) return fromList
-    if (drink.value && String(drink.value.id) === String(props.drinkId)) {
-        return drink.value
-    }
-    return null
+  if (!props.drinkId) return null
+  const fromList = drinks.value?.find((d) => String(d.id) === String(props.drinkId))
+  if (fromList) return fromList
+  if (drink.value && String(drink.value.id) === String(props.drinkId)) {
+    return drink.value
+  }
+  return null
 })
 
 // Fetch drink if we don't have it
-watch(() => props.drinkId, async (newId) => {
+watch(
+  () => props.drinkId,
+  async (newId) => {
     if (newId && !drinkToEdit.value) {
-        await getDrink(String(newId))
+      await getDrink(String(newId))
     } else if (newId) {
-        getDrink(String(newId))
+      getDrink(String(newId))
     }
-}, { immediate: true })
+  },
+  { immediate: true },
+)
 
 const isEditing = computed(() => !!props.drinkId)
 
@@ -51,21 +67,23 @@ const selectOptions = {
   alcoholic: [
     { label: 'Alcoholic', value: 'true' },
     { label: 'Non-Alcoholic', value: 'false' },
-  ]
+  ],
 }
 
-const formSchema = toTypedSchema(z.object({
-  name: z.string().min(1).max(255),
-  slug: z.string().min(1).max(255),
-  category: z.string().min(1).max(100),
-  alcoholic: z.enum(['true', 'false']),
-  glass: z.string().max(100).optional(),
-  instructions: z.string().max(1000).optional(),
-  thumb_url: z.string().url(),
-  ingredients: z.string().max(1000).optional(),
-  measurements: z.string().max(1000).optional(),
-  price: z.number().min(0).optional(),
-}))
+const formSchema = toTypedSchema(
+  z.object({
+    name: z.string().min(1).max(255),
+    slug: z.string().min(1).max(255),
+    category: z.string().min(1).max(100),
+    alcoholic: z.enum(['true', 'false']),
+    glass: z.string().max(100).optional(),
+    instructions: z.string().max(1000).optional(),
+    thumb_url: z.string().url(),
+    ingredients: z.string().max(1000).optional(),
+    measurements: z.string().max(1000).optional(),
+    price: z.number().min(0).optional(),
+  }),
+)
 
 const form = useForm({
   validationSchema: formSchema,
@@ -84,27 +102,29 @@ watch(
         alcoholic: newDrink.alcoholic ? 'true' : 'false',
         glass: newDrink.glass || '',
         instructions: (() => {
-            const raw = newDrink.instructions || ''
-            if (raw.trim().startsWith('[')) {
-                try {
-                    const parsed = JSON.parse(raw)
-                    if (Array.isArray(parsed)) return parsed.join('\n')
-                } catch { /* ignore */ }
+          const raw = newDrink.instructions || ''
+          if (raw.trim().startsWith('[')) {
+            try {
+              const parsed = JSON.parse(raw)
+              if (Array.isArray(parsed)) return parsed.join('\n')
+            } catch {
+              /* ignore */
             }
-            return raw
+          }
+          return raw
         })(),
         thumb_url: newDrink.thumb_url,
         ingredients: (newDrink.ingredients || []).join(', '),
         measurements: (newDrink.measurements || []).join(', '),
-        price: newDrink.price || 0
+        price: newDrink.price || 0,
       })
     } else {
-        form.resetForm()
-        // Default values for new drink if helpful
-        form.setFieldValue('alcoholic', 'true')
+      form.resetForm()
+      // Default values for new drink if helpful
+      form.setFieldValue('alcoholic', 'true')
     }
   },
-  { immediate: true }
+  { immediate: true },
 )
 
 const onSubmit = form.handleSubmit(async (values) => {
@@ -112,27 +132,31 @@ const onSubmit = form.handleSubmit(async (values) => {
     ...values,
     alcoholic: values.alcoholic === 'true',
     measurements: values.measurements
-        ? String(values.measurements).split(',').map((m: string) => m.trim())
-        : [],
+      ? String(values.measurements)
+          .split(',')
+          .map((m: string) => m.trim())
+      : [],
     ingredients: values.ingredients
-        ? String(values.ingredients).split(',').map((i: string) => i.trim())
-        : [],
+      ? String(values.ingredients)
+          .split(',')
+          .map((i: string) => i.trim())
+      : [],
     active: true,
     last_modified: new Date(),
   }
 
   try {
     if (isEditing.value && props.drinkId) {
-        const editPayload: EditDrink = {
-            id: props.drinkId,
-            data: drinkData
-        }
-        await drinkApi.editDrink(editPayload)
-        await getDrinks()
-        await getDrinks() // Copied from original, seems redundant but maybe needed for race conditions?
+      const editPayload: EditDrink = {
+        id: props.drinkId,
+        data: drinkData,
+      }
+      await drinkApi.editDrink(editPayload)
+      await getDrinks()
+      await getDrinks() // Copied from original, seems redundant but maybe needed for race conditions?
     } else {
-        await drinkApi.createDrink(drinkData as unknown as CreateNewDrink)
-        await getDrinks()
+      await drinkApi.createDrink(drinkData as unknown as CreateNewDrink)
+      await getDrinks()
     }
     sheetOpen.value = false
     emit('close')
@@ -148,12 +172,17 @@ const onSubmit = form.handleSubmit(async (values) => {
       <SheetHeader>
         <SheetTitle>{{ isEditing ? 'Edit Drink' : 'Create New Drink' }}</SheetTitle>
         <SheetDescription>
-          {{ isEditing ? 'Make changes to the drink details below.' : 'Add a new drink to the menu.' }}
+          {{
+            isEditing ? 'Make changes to the drink details below.' : 'Add a new drink to the menu.'
+          }}
         </SheetDescription>
       </SheetHeader>
 
       <div v-if="isEditing && !drinkToEdit" class="flex justify-center items-center py-10">
-         <iconify-icon icon="lucide:loader-circle" class="text-4xl animate-spin text-muted-foreground" />
+        <iconify-icon
+          icon="lucide:loader-circle"
+          class="text-4xl animate-spin text-muted-foreground"
+        />
       </div>
 
       <form v-else @submit="onSubmit" class="space-y-4 mt-6">
@@ -197,7 +226,11 @@ const onSubmit = form.handleSubmit(async (values) => {
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                <SelectItem v-for="option in selectOptions.alcoholic" :key="option.value" :value="option.value">
+                <SelectItem
+                  v-for="option in selectOptions.alcoholic"
+                  :key="option.value"
+                  :value="option.value"
+                >
                   {{ option.label }}
                 </SelectItem>
               </SelectContent>
@@ -260,7 +293,13 @@ const onSubmit = form.handleSubmit(async (values) => {
           <FormItem>
             <FormLabel>Price</FormLabel>
             <FormControl>
-              <Input v-bind="componentField" type="number" step="0.01" min="0" placeholder="Enter price" />
+              <Input
+                v-bind="componentField"
+                type="number"
+                step="0.01"
+                min="0"
+                placeholder="Enter price"
+              />
             </FormControl>
             <FormMessage />
           </FormItem>

@@ -68,12 +68,16 @@ const addTabItem = async (itemData: {
 // Update tab item
 const updateTabItem = async (itemId: string | number, updateData: Partial<TabItem>) => {
   try {
-    const response = await axios.put(`${import.meta.env.VITE_API_URL}/tabs/items/${itemId}`, updateData, {
-      headers: {
-        apiKey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+    const response = await axios.put(
+      `${import.meta.env.VITE_API_URL}/tabs/items/${itemId}`,
+      updateData,
+      {
+        headers: {
+          apiKey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
       },
-    })
+    )
     return response.data
   } catch (error) {
     console.error('Error updating tab item:', error)
@@ -123,12 +127,16 @@ const createTabSplit = async (splitData: {
 // Update tab split (for payment processing)
 const updateTabSplit = async (splitId: string | number, updateData: Partial<TabSplit>) => {
   try {
-    const response = await axios.put(`${import.meta.env.VITE_API_URL}/tabs/splits/${splitId}`, updateData, {
-      headers: {
-        apiKey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+    const response = await axios.put(
+      `${import.meta.env.VITE_API_URL}/tabs/splits/${splitId}`,
+      updateData,
+      {
+        headers: {
+          apiKey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
       },
-    })
+    )
     return response.data
   } catch (error) {
     console.error('Error updating tab split:', error)
@@ -145,12 +153,16 @@ const createPayment = async (paymentData: {
   payment_method: 'cash' | 'card' | 'mobile' | 'mixed'
 }) => {
   try {
-    const response = await axios.post(`${import.meta.env.VITE_API_URL}/tabs/payments`, paymentData, {
-      headers: {
-        apiKey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_URL}/tabs/payments`,
+      paymentData,
+      {
+        headers: {
+          apiKey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
       },
-    })
+    )
     return response.data
   } catch (error) {
     console.error('Error creating payment:', error)
@@ -161,12 +173,16 @@ const createPayment = async (paymentData: {
 // Close/settle tab
 const settleTab = async (tabId: string | number) => {
   try {
-    const response = await axios.post(`${import.meta.env.VITE_API_URL}/tabs/${tabId}/settle`, {}, {
-      headers: {
-        apiKey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_URL}/tabs/${tabId}/settle`,
+      {},
+      {
+        headers: {
+          apiKey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
       },
-    })
+    )
     return response.data
   } catch (error) {
     console.error('Error settling tab:', error)
@@ -183,5 +199,5 @@ export default {
   createTabSplit,
   updateTabSplit,
   createPayment,
-  settleTab
+  settleTab,
 }

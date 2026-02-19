@@ -15,5 +15,4 @@ app.use(createPinia())
 app.use(router)
 app.use(createMetaManager())
 
-
 app.mount('#app')

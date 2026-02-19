@@ -14,8 +14,8 @@ defineProps<{
   object: {
     id: string | number
     name?: string
-    editFn: Function
-    deleteFn: Function
+    editFn: () => void
+    deleteFn: () => void
   }
 }>()
 

@@ -7,12 +7,12 @@ const headers = {
   Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
 }
 
-const createMenu = async (data: any) => {
+const createMenu = async (data: Record<string, unknown>) => {
   const response = await axios.post(`${API_URL}/menus`, data, { headers })
   return response.data
 }
 
-const updateMenu = async (id: number | string, data: any) => {
+const updateMenu = async (id: number | string, data: Record<string, unknown>) => {
   const response = await axios.put(`${API_URL}/menus/${id}`, data, { headers })
   return response.data
 }

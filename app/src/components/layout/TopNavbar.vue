@@ -3,6 +3,7 @@ import { useDark, useToggle } from '@vueuse/core'
 import { useRouter, useRoute } from 'vue-router'
 import AppActiveTabs from '@/components/app/tab/AppActiveTabs.vue'
 import GlobalSearch from '@/components/app/search/GlobalSearch.vue'
+import type { Tabs } from '@/services/supabase/types/tabTypes'
 
 const authStore = useAuthStore()
 const { profile } = storeToRefs(authStore)
@@ -16,10 +17,10 @@ const route = useRoute()
 const isDark = useDark()
 const toggleDark = useToggle(isDark)
 
-const onTabSelected = (tab: any) => {
+const onTabSelected = (tab: Tabs[0]) => {
   // Always drive the sidebar via query param
   router.push({ query: { ...route.query, tabId: tab.id } })
-  
+
   // Ensure sidebar is visible
   if (!rightSidebarOpen.value && toggleRightSidebar) {
     toggleRightSidebar()
@@ -29,14 +30,19 @@ const onTabSelected = (tab: any) => {
 
 <template>
   <nav class="h-16 border-b bg-muted/40 flex gap-2 justify-between px-6 items-center">
-    
     <div class="gap-x-2 flex flex col w-full">
-    <AppActiveTabs v-if="profile?.user_role !== 'admin'" @tab-selected="onTabSelected" />
-    <GlobalSearch />
+      <AppActiveTabs v-if="profile?.user_role !== 'admin'" @tab-selected="onTabSelected" />
+      <GlobalSearch />
     </div>
-    
+
     <div class="flex justify-center items-center gap-1">
-      <Button v-if="profile?.user_role !== 'admin'" @click="toggleRightSidebar" variant="outline" size="icon" class="w-8 h-8 mr-2">
+      <Button
+        v-if="profile?.user_role !== 'admin'"
+        @click="toggleRightSidebar"
+        variant="outline"
+        size="icon"
+        class="w-8 h-8 mr-2"
+      >
         <Transition name="scale" mode="out-in">
           <iconify-icon v-if="rightSidebarOpen" icon="lucide:panel-right-close" />
           <iconify-icon v-else icon="lucide:panel-right-open" />

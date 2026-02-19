@@ -16,7 +16,7 @@ import QrcodeVue from 'qrcode.vue'
 const props = withDefaults(defineProps<Props>(), {
   merchantName: 'BAR TAB LIQUORS',
   merchantAddress: () => ['34 Melrose Blvd', 'Melrose Arch, 2196', 'Tel: 011 771 6000'],
-  vatNumber: '4090105588'
+  vatNumber: '4090105588',
 })
 
 const groupedItems = computed(() => {
@@ -27,41 +27,47 @@ const totalTax = computed(() => props.tab.tax_amount || 0)
 const subtotal = computed(() => props.tab.subtotal || 0)
 const total = computed(() => props.tab.total_owed || 0)
 const tip = computed(() => {
-    // Prefer the tip from payments if available, as that's what was actually paid
-    const paymentTips = props.tab.tab_payment?.reduce((sum, p) => sum + (p.tip_added || 0), 0) || 0
-    return Math.max(props.tab.tip_amount || 0, paymentTips)
+  // Prefer the tip from payments if available, as that's what was actually paid
+  const paymentTips = props.tab.tab_payment?.reduce((sum, p) => sum + (p.tip_added || 0), 0) || 0
+  return Math.max(props.tab.tip_amount || 0, paymentTips)
 })
 
 const totalBeforeTip = computed(() => {
-    if (props.tab.remaining_balance !== undefined) {
-         // If remaining balance logic was used, we still want the full bill value for the receipt
-         // So we should try to sum subtotal + tax
-         return (props.tab.subtotal || 0) + (props.tab.tax_amount || 0)
-    }
-    return props.tab.total_before_tip || 0
+  if (props.tab.remaining_balance !== undefined) {
+    // If remaining balance logic was used, we still want the full bill value for the receipt
+    // So we should try to sum subtotal + tax
+    return (props.tab.subtotal || 0) + (props.tab.tax_amount || 0)
+  }
+  return props.tab.total_before_tip || 0
 })
 
 const grossTotal = computed(() => totalBeforeTip.value + tip.value)
 
 // Calculate paid amount from payments array
 const amountPaid = computed(() => {
-    return props.tab.tab_payment?.reduce((sum, p) => sum + (p.amount_paid || 0), 0) || 0
+  return props.tab.tab_payment?.reduce((sum, p) => sum + (p.amount_paid || 0), 0) || 0
 })
 
 const today = new Date()
-const dateStr = today.toLocaleDateString('en-ZA').replace(/\//g, '.')
-const timeStr = today.toLocaleTimeString('en-ZA', { hour: '2-digit', minute: '2-digit', hour12: false })
+const dateStr = today.toLocaleDateString('en-ZA').replaceAll('/', '.')
+const timeStr = today.toLocaleTimeString('en-ZA', {
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: false,
+})
 
 const vat = Number(import.meta.env.VITE_VAT) || 0.15
 const vatPercentage = (vat * 100).toFixed(1) + '%'
 
 const paymentUrl = computed(() => {
-    return `${window.location.protocol}//${window.location.host}/pay/${props.tab.id}`
+  return `${globalThis.location.protocol}//${globalThis.location.host}/pay/${props.tab.id}`
 })
 </script>
 
 <template>
-  <div class="bg-white text-black p-4 font-mono text-xs max-w-[300px] mx-auto shadow-lg leading-tight select-none">
+  <div
+    class="bg-white text-black p-4 font-mono text-xs max-w-[300px] mx-auto shadow-lg leading-tight select-none"
+  >
     <!-- Header -->
     <div class="text-center space-y-1 mb-3">
       <h1 class="font-bold text-lg mb-2">{{ merchantName }}</h1>
@@ -73,14 +79,19 @@ const paymentUrl = computed(() => {
     </div>
 
     <!-- Top QR Code -->
-    <a :href="paymentUrl" target="_blank" class="flex justify-center my-2 cursor-pointer hover:opacity-80 transition-opacity" title="Scan or Click to Pay">
-       <QrcodeVue :value="paymentUrl" :size="80" level="L" render-as="svg" />
+    <a
+      :href="paymentUrl"
+      target="_blank"
+      class="flex justify-center my-2 cursor-pointer hover:opacity-80 transition-opacity"
+      title="Scan or Click to Pay"
+    >
+      <QrcodeVue :value="paymentUrl" :size="80" level="L" render-as="svg" />
     </a>
 
     <!-- Separator -->
     <div class="text-center my-2 text-[10px] tracking-widest">
       ----------------------------------------
-      <br>TAX INVOICE<br>
+      <br />TAX INVOICE<br />
       ----------------------------------------
     </div>
 
@@ -93,27 +104,33 @@ const paymentUrl = computed(() => {
         <div>{{ formatCurrency(item.item_total).replace('R', '').trim() }}</div>
       </div>
     </div>
-    
+
     <!-- Totals -->
     <div class="border-t border-dashed border-black pt-2 mt-2 space-y-1">
       <div class="flex justify-between font-bold">
         <span>TOTAL ({{ items.length }} items)</span>
         <span>{{ formatCurrency(totalBeforeTip).replace('R', '').trim() }}</span>
       </div>
-       <div v-if="tip > 0" class="flex justify-between">
+      <div v-if="tip > 0" class="flex justify-between">
         <span>TIP</span>
         <span>{{ formatCurrency(tip).replace('R', '').trim() }}</span>
       </div>
       <!-- Combined Total removed to distinguish Owed vs Tipped -->
-      
-      <div class="flex justify-between font-bold text-sm mt-1 border-t border-dashed border-black pt-1">
+
+      <div
+        class="flex justify-between font-bold text-sm mt-1 border-t border-dashed border-black pt-1"
+      >
         <span>PAID</span>
         <span>{{ formatCurrency(amountPaid).replace('R', '').trim() }}</span>
       </div>
-      
-       <div v-if="amountPaid >= grossTotal" class="flex justify-between text-xs mt-1">
+
+      <div v-if="amountPaid >= grossTotal" class="flex justify-between text-xs mt-1">
         <span>CHANGE</span>
-        <span>{{ formatCurrency(amountPaid - grossTotal).replace('R', '').trim() }}</span>
+        <span>{{
+          formatCurrency(amountPaid - grossTotal)
+            .replace('R', '')
+            .trim()
+        }}</span>
       </div>
     </div>
 
@@ -127,7 +144,9 @@ const paymentUrl = computed(() => {
       </div>
       <div class="flex justify-between text-[10px]">
         <span class="w-10">{{ vatPercentage }}</span>
-        <span class="w-16 text-right">{{ formatCurrency(totalBeforeTip).replace('R', '').trim() }}</span>
+        <span class="w-16 text-right">{{
+          formatCurrency(totalBeforeTip).replace('R', '').trim()
+        }}</span>
         <span class="w-16 text-right">{{ formatCurrency(totalTax).replace('R', '').trim() }}</span>
         <span class="w-16 text-right">{{ formatCurrency(subtotal).replace('R', '').trim() }}</span>
       </div>
@@ -136,7 +155,7 @@ const paymentUrl = computed(() => {
     <!-- Smart Shopper Mock -->
     <div class="text-center my-2 text-[10px] tracking-widest">
       ----------------------------------------
-      <br>LOYALTY PROGRAM<br>
+      <br />LOYALTY PROGRAM<br />
       ----------------------------------------
     </div>
     <div class="text-[10px] mb-2 text-center">
@@ -166,7 +185,7 @@ const paymentUrl = computed(() => {
         <div>Till</div>
         <div>1</div>
       </div>
-       <div class="text-center">
+      <div class="text-center">
         <div>Date</div>
         <div>{{ dateStr }}</div>
       </div>
@@ -177,21 +196,27 @@ const paymentUrl = computed(() => {
     </div>
 
     <!-- Barcode -->
-     <a :href="paymentUrl" target="_blank" class="flex justify-center cursor-pointer hover:opacity-75 transition-opacity" title="Click to Pay Tab">
-        <!-- CSS Barcode Simulation -->
-        <div class="h-12 flex items-end gap-[1px]">
-          <div v-for="i in 40" :key="i" 
-            class="bg-black" 
-            :class="[
-              Math.random() > 0.5 ? 'w-[2px]' : 'w-[1px]',
-              Math.random() > 0.7 ? 'h-full' : 'h-[90%]'
-            ]"
-          ></div>
-        </div>
+    <a
+      :href="paymentUrl"
+      target="_blank"
+      class="flex justify-center cursor-pointer hover:opacity-75 transition-opacity"
+      title="Click to Pay Tab"
+    >
+      <!-- CSS Barcode Simulation -->
+      <div class="h-12 flex items-end gap-[1px]">
+        <div
+          v-for="i in 40"
+          :key="i"
+          class="bg-black"
+          :class="[
+            Math.random() > 0.5 ? 'w-[2px]' : 'w-[1px]',
+            Math.random() > 0.7 ? 'h-full' : 'h-[90%]',
+          ]"
+        ></div>
+      </div>
     </a>
     <div class="text-center text-xs tracking-[0.2em] mt-1 font-bold">
       910{{ tab.id.toString().padStart(6, '0') }}4
     </div>
-
   </div>
 </template>

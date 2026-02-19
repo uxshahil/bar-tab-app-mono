@@ -2,6 +2,7 @@
 import { ref, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useDebounceFn } from '@vueuse/core'
+import { Input } from '@/components/ui/input'
 
 const router = useRouter()
 const route = useRoute()
@@ -14,9 +15,9 @@ const updateSearch = useDebounceFn((query: string) => {
     router.push({ path: '/drinks', query: { search: query } })
     return
   }
-  
+
   const queryObj = { ...route.query }
-  
+
   if (query) {
     queryObj.search = query
   } else {
@@ -37,7 +38,7 @@ watch(
     if (newSearch !== searchQuery.value) {
       searchQuery.value = (newSearch as string) || ''
     }
-  }
+  },
 )
 </script>
 
@@ -48,12 +49,8 @@ watch(
         class="absolute top-[50%] translate-y-[-50%] left-2.5 text-muted-foreground z-10"
         icon="lucide:search"
       ></iconify-icon>
-      <input
-        v-model="searchQuery"
-        class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pl-9"
-        placeholder="Filter tabs or drinks..."
-      />
-      <button 
+      <Input v-model="searchQuery" class="pl-9" placeholder="Filter tabs or drinks..." />
+      <button
         v-if="searchQuery"
         @click="searchQuery = ''"
         class="absolute top-[50%] translate-y-[-50%] right-2.5 text-muted-foreground hover:text-foreground"

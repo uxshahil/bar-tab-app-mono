@@ -28,7 +28,7 @@ provide(menuKey, {
   menuOpen,
   toggleMenu,
   rightSidebarOpen,
-  toggleRightSidebar
+  toggleRightSidebar,
 })
 </script>
 
@@ -37,7 +37,6 @@ provide(menuKey, {
     <Sidebar @userClicked="userClicked" @tabClicked="tabClicked" @drinkClicked="drinkClicked" />
     <AppUserSheet v-model:open="taskSheetOpen.user" />
     <AppDrinkSheet v-model:open="taskSheetOpen.drink" />
-    <!-- <AppNewTab v-model="taskSheetOpen.tab" /> -->
 
     <div
       class="flex flex-col transition-[margin]"
@@ -52,7 +51,7 @@ provide(menuKey, {
           </div>
           <slot />
         </main>
-        
+
         <AppRightSidebar />
       </div>
     </div>

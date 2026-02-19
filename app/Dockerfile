@@ -1,5 +1,5 @@
 # Build stage - Use Node.js 20
-FROM node:20-alpine as build-stage
+FROM node:20-alpine AS build-stage
 
 WORKDIR /app
 
@@ -22,7 +22,7 @@ ARG VITE_VAT
 RUN npm run build
 
 # Production stage
-FROM nginx:stable-alpine as production-stage
+FROM nginx:stable-alpine AS production-stage
 
 # Copy built assets from build stage
 COPY --from=build-stage /app/dist /usr/share/nginx/html

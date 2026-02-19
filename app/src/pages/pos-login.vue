@@ -1,31 +1,36 @@
 <script setup lang="ts">
 import { posLogin } from '@/services/supabase/auth'
-import { watchDebounced } from '@vueuse/core'
+import { toTypedSchema } from '@vee-validate/zod'
+import { useForm } from 'vee-validate'
+import * as z from 'zod'
 
-const formData = ref({
-  pin: '',
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+
+const formSchema = toTypedSchema(
+  z.object({
+    pin: z.string().regex(/^\d{6}$|^\d{9}$/, 'Invalid pin'),
+  }),
+)
+
+const form = useForm({
+  validationSchema: formSchema,
 })
-
-const { serverError, handleServerError, posLoginFormErrors, handlePosLoginForm } = useFormErrors()
 
 const router = useRouter()
 
-watchDebounced(
-  formData,
-  () => {
-    handlePosLoginForm(formData.value)
-  },
-  { debounce: 1000, deep: true },
-)
-
-const signin = async () => {
-  const { error } = await posLogin(formData.value)
+const onSubmit = form.handleSubmit(async (values) => {
+  const { error } = await posLogin(values)
   if (error) {
-    handleServerError(error)
+    form.setErrors({
+      pin: error.message,
+    })
   } else {
     router.push('/')
   }
-}
+})
 </script>
 
 <template>
@@ -36,28 +41,17 @@ const signin = async () => {
         <CardDescription> Login to your account </CardDescription>
       </CardHeader>
       <CardContent>
-        <form class="grid gap-4" @submit.prevent="signin">
-          <div class="grid gap-2">
-            <div class="flex items-center">
-              <Label id="pin">Pin</Label>
-            </div>
-            <Input
-              id="pin"
-              type="password"
-              autocomplete
-              required
-              v-model="formData.pin"
-              :class="{ 'border-red-500': serverError }"
-            />
-          </div>
-          <ul class="text-sm text-left text-red-500" v-if="posLoginFormErrors?.pin">
-            <li v-for="error in posLoginFormErrors.pin" :key="error" class="list-disc">
-              {{ error }}
-            </li>
-          </ul>
-          <ul class="text-sm text-left text-red-500" v-if="serverError">
-            <li class="list-disc">{{ serverError }}</li>
-          </ul>
+        <form class="grid gap-4" @submit="onSubmit">
+          <FormField v-slot="{ componentField }" name="pin">
+            <FormItem>
+              <FormLabel>Pin</FormLabel>
+              <FormControl>
+                <Input type="password" v-bind="componentField" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+
           <Button type="submit" class="w-full"> Login </Button>
         </form>
       </CardContent>

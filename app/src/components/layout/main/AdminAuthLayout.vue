@@ -28,7 +28,7 @@ provide(menuKey, {
   menuOpen,
   toggleMenu,
   rightSidebarOpen,
-  toggleRightSidebar
+  toggleRightSidebar,
 })
 </script>
 
@@ -40,7 +40,6 @@ provide(menuKey, {
     <AppDrinkSheet v-model:open="taskSheetOpen.drink" />
 
     <!-- Global Tab Sheet -->
-
 
     <div
       class="flex flex-col transition-[margin]"

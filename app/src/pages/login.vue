@@ -1,32 +1,43 @@
 <script setup lang="ts">
 import { login } from '@/services/supabase/auth'
-import { watchDebounced } from '@vueuse/core'
+import { toTypedSchema } from '@vee-validate/zod'
+import { useForm } from 'vee-validate'
+import * as z from 'zod'
 
-const formData = ref({
-  email: '',
-  password: '',
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+
+const formSchema = toTypedSchema(
+  z.object({
+    email: z.string().email('Not a valid email format'),
+    password: z.string().min(6, 'Password must be at least 6 characters'),
+  }),
+)
+
+const form = useForm({
+  validationSchema: formSchema,
 })
-
-const { serverError, handleServerError, loginFormErrors, handleLoginForm } = useFormErrors()
 
 const router = useRouter()
 
-watchDebounced(
-  formData,
-  () => {
-    handleLoginForm(formData.value)
-  },
-  { debounce: 1000, deep: true },
-)
-
-const signin = async () => {
-  const { error } = await login(formData.value)
+const onSubmit = form.handleSubmit(async (values) => {
+  const { error } = await login(values)
   if (error) {
-    handleServerError(error)
+    if (error.message === 'Invalid login credentials') {
+      form.setFieldError('email', 'Incorrect email or password')
+      form.setFieldError('password', 'Incorrect email or password')
+    } else {
+      // Ideally use toast here, but fallback to form error if no toast
+      form.setErrors({
+        email: error.message,
+      })
+    }
   } else {
     router.push('/')
   }
-}
+})
 </script>
 
 <template>
@@ -37,44 +48,27 @@ const signin = async () => {
         <CardDescription> Login to your account </CardDescription>
       </CardHeader>
       <CardContent>
-        <form class="grid gap-4" @submit.prevent="signin">
-          <div class="grid gap-2">
-            <Label id="email" class="text-left">Email</Label>
-            <Input
-              type="email"
-              placeholder="johndoe19@example.com"
-              required
-              v-model="formData.email"
-              :class="{ 'border-red-500': serverError }"
-            />
-            <ul class="text-sm text-left text-red-500" v-if="loginFormErrors?.email.length">
-              <li v-for="error in loginFormErrors.email" :key="error" class="list-disc">
-                {{ error }}
-              </li>
-            </ul>
-          </div>
-          <div class="grid gap-2">
-            <div class="flex items-center">
-              <Label id="password">Password</Label>
-              <!-- <a href="#" class="inline-block ml-auto text-xs underline"> Forgot your password? </a> -->
-            </div>
-            <Input
-              id="password"
-              type="password"
-              autocomplete
-              required
-              v-model="formData.password"
-              :class="{ 'border-red-500': serverError }"
-            />
-          </div>
-          <ul class="text-sm text-left text-red-500" v-if="loginFormErrors?.password.length">
-            <li v-for="error in loginFormErrors.password" :key="error" class="list-disc">
-              {{ error }}
-            </li>
-          </ul>
-          <ul class="text-sm text-left text-red-500" v-if="serverError">
-            <li class="list-disc">{{ serverError }}</li>
-          </ul>
+        <form class="grid gap-4" @submit="onSubmit">
+          <FormField v-slot="{ componentField }" name="email">
+            <FormItem class="text-left">
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input type="email" placeholder="johndoe19@example.com" v-bind="componentField" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+
+          <FormField v-slot="{ componentField }" name="password">
+            <FormItem class="text-left">
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <Input type="password" v-bind="componentField" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+
           <Button type="submit" class="w-full"> Login </Button>
         </form>
         <div class="mt-4 text-sm text-center flex flex-col">

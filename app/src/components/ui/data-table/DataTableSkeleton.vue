@@ -18,14 +18,15 @@ interface Props {
 withDefaults(defineProps<Props>(), {
   rowCount: 2,
   columnCount: 3,
-  showPagination: true
+  showPagination: true,
 })
 </script>
 
 <template>
   <div class="space-y-4">
     <div class="border rounded-md">
-      <Table>
+      <!-- prettier-ignore -->
+      <Table> <!-- NOSONAR -->
         <TableHeader>
           <TableRow>
             <TableHead v-for="i in columnCount" :key="i">
@@ -45,12 +46,17 @@ withDefaults(defineProps<Props>(), {
 
     <!-- Pagination Skeleton -->
     <div v-if="showPagination" class="flex items-center justify-between pl-4 pr-2 pb-4">
-      <Skeleton class="h-4 w-[250px]" /> <!-- Showing x of y -->
+      <Skeleton class="h-4 w-[250px]" />
+      <!-- Showing x of y -->
       <div class="flex items-center space-x-2">
-        <Skeleton class="h-8 w-8" /> <!-- Prev -->
-        <Skeleton class="h-8 w-8" /> <!-- 1 -->
-        <Skeleton class="h-8 w-8" /> <!-- 2 -->
-        <Skeleton class="h-8 w-8" /> <!-- Next -->
+        <Skeleton class="h-8 w-8" />
+        <!-- Prev -->
+        <Skeleton class="h-8 w-8" />
+        <!-- 1 -->
+        <Skeleton class="h-8 w-8" />
+        <!-- 2 -->
+        <Skeleton class="h-8 w-8" />
+        <!-- Next -->
       </div>
     </div>
   </div>

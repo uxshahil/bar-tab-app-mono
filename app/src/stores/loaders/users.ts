@@ -1,6 +1,9 @@
 import type { Profile as User, Profiles as Users } from '@/services/supabase/types/profileTypes'
 import type { CreateNewUser, EditUser, DeleteUser } from '@/interfaces/UserInterfaces'
-import { profilesQuery as usersQuery, profileQuery as userQuery } from '@/services/supabase/queries/profileQueries'
+import {
+  profilesQuery as usersQuery,
+  profileQuery as userQuery,
+} from '@/services/supabase/queries/profileQueries'
 // Change the import to use named exports
 import profileApi from '@/services/api/profileApi'
 import { socket } from '@/services/socket/socket'
@@ -9,24 +12,6 @@ export const useUsersStore = defineStore('users-store', () => {
   // State
   const users = ref<Users | null>(null)
   const user = ref<User | null>(null)
-
-  // Convert Profile type to CreateNewUser type
-  // const convertProfileToCreateUser = (profileData: Partial<User>): Partial<CreateNewUser> => {
-  //   // Extract first and last name from full_name
-  //   const [firstName, lastName] = profileData.full_name?.split(' ') || ['', '']
-    
-  //   return {
-  //     firstName,
-  //     lastName,
-  //     username: profileData.username || '',
-  //     email: profileData.email || '',
-  //     password: profileData.password || '',
-  //     user_role: (profileData.user_role as 'bar-staff' | 'bar-manager') || 'bar-staff',
-  //     pin: profileData.pin || '',
-  //     bio: profileData.bio || '',
-  //     avatar_url: profileData.avatar_url || ''
-  //   }
-  // }
 
   // Convert CreateNewUser to Profile format
   const convertCreateUserToProfile = (userData: CreateNewUser): Partial<User> => {
@@ -40,7 +25,7 @@ export const useUsersStore = defineStore('users-store', () => {
       bio: userData.bio,
       avatar_url: userData.avatar_url,
       active: true,
-      mode: 'light'
+      mode: 'light',
     }
   }
 
@@ -75,7 +60,7 @@ export const useUsersStore = defineStore('users-store', () => {
     try {
       // Convert CreateNewUser to Profile format
       const profileData = convertCreateUserToProfile(userData)
-      
+
       // Use the createProfile function which should return a Promise
       // Add type assertion to ensure profileData matches the expected type
       const userId = await profileApi.createProfile(profileData as CreateNewUser)
@@ -83,11 +68,11 @@ export const useUsersStore = defineStore('users-store', () => {
       await getUsers()
 
       return userId
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      useErrorStore().setError({ 
-        error: error.message || 'Failed to create user', 
-        customCode: error.status || 500 
+      useErrorStore().setError({
+        error: error.message || 'Failed to create user',
+        customCode: error.status || 500,
       })
       return null
     }
@@ -97,11 +82,11 @@ export const useUsersStore = defineStore('users-store', () => {
     try {
       // Convert updates to Profile format
       const profileUpdates: Partial<User> = {}
-      
+
       if (updates.firstName && updates.lastName) {
         profileUpdates.full_name = `${updates.firstName} ${updates.lastName}`
       }
-      
+
       if (updates.username !== undefined) profileUpdates.username = updates.username
       if (updates.email !== undefined) profileUpdates.email = updates.email
       if (updates.password !== undefined) profileUpdates.password = updates.password
@@ -112,11 +97,11 @@ export const useUsersStore = defineStore('users-store', () => {
 
       const editUserData: EditUser = {
         id: String(userId),
-        data: updates
+        data: updates,
       }
 
       const result = await profileApi.editProfile(editUserData)
-      
+
       // Check if the update was successful
       if (result.error) {
         throw new Error(result.error)
@@ -128,11 +113,11 @@ export const useUsersStore = defineStore('users-store', () => {
       }
 
       return true
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      useErrorStore().setError({ 
-        error: error.message || 'Failed to update user', 
-        customCode: error.status || 500 
+      useErrorStore().setError({
+        error: error.message || 'Failed to update user',
+        customCode: error.status || 500,
       })
       return false
     }
@@ -141,7 +126,7 @@ export const useUsersStore = defineStore('users-store', () => {
   const deleteUser = async (userId: string) => {
     try {
       const deleteData: DeleteUser = {
-        id: userId
+        id: userId,
       }
 
       await profileApi.deleteProfile(deleteData)
@@ -150,11 +135,11 @@ export const useUsersStore = defineStore('users-store', () => {
       await getUsers()
 
       return true
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      useErrorStore().setError({ 
-        error: error.message || 'Failed to delete user', 
-        customCode: error.status || 500 
+      useErrorStore().setError({
+        error: error.message || 'Failed to delete user',
+        customCode: error.status || 500,
       })
       return false
     }
@@ -162,21 +147,18 @@ export const useUsersStore = defineStore('users-store', () => {
 
   // Socket Listeners
   socket.on('user:created', () => {
-      console.log('Socket: user:created')
-      getUsers()
+    getUsers()
   })
 
   socket.on('user:updated', ({ id }) => {
-      console.log('Socket: user:updated', id)
-      if (user.value && String(user.value.id) === String(id)) {
-          getUser('id', String(id))
-      }
-      getUsers()
+    if (user.value && String(user.value.id) === String(id)) {
+      getUser('id', String(id))
+    }
+    getUsers()
   })
 
   socket.on('user:deleted', () => {
-      console.log('Socket: user:deleted')
-      getUsers()
+    getUsers()
   })
 
   return {
@@ -191,6 +173,6 @@ export const useUsersStore = defineStore('users-store', () => {
     // Actions
     createUser,
     updateUser,
-    deleteUser
+    deleteUser,
   }
 })

@@ -3,7 +3,13 @@ import { useTabsStore } from '@/stores/loaders/tabs'
 import { useAuthStore } from '@/stores/auth'
 import { useTabSheetStore } from '@/stores/tabSheet'
 import { storeToRefs } from 'pinia'
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet'
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -12,6 +18,7 @@ import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
 import type { Drink } from '@/services/supabase/types/drinkTypes'
+import type { Tabs } from '@/services/supabase/types/tabTypes'
 
 const props = defineProps<{
   drink: Drink | null
@@ -31,16 +38,17 @@ const selectedSplitId = ref<number | null>(null)
 const specialInstructions = ref('')
 const showNewTabForm = ref(false)
 
-const newTabSchema = toTypedSchema(z.object({
-  tab_number: z.string().optional(),
-  user_id: z.string().optional(),
-  special_notes: z.string().optional(),
-}))
+const newTabSchema = toTypedSchema(
+  z.object({
+    tab_number: z.string().optional(),
+    user_id: z.string().optional(),
+    special_notes: z.string().optional(),
+  }),
+)
 
 const form = useForm({
   validationSchema: newTabSchema,
 })
-
 
 // Reset state when sheet opens/closes or drink changes
 watch(isOpen, (newVal) => {
@@ -54,20 +62,20 @@ watch(isOpen, (newVal) => {
       mode.value = 'select-tab'
       tabsStore.getOpenTabs()
     }
-    
+
     // Reset form fields
     quantity.value = 1
     selectedSplitId.value = null
     specialInstructions.value = ''
     showNewTabForm.value = false
-    
+
     // Reset new tab form
     form.resetForm()
   }
 })
 
 // Tab Selection Logic
-const selectTab = async (tab: any) => {
+const selectTab = async (tab: Tabs[0]) => {
   await tabsStore.getTab(tab.id.toString())
   await tabsStore.getTabSplits(tab.id.toString())
   mode.value = 'configure-item'
@@ -78,32 +86,32 @@ const generateTabNumber = async () => {
   // Note: In a high-volume production app, this should be done via a DB function or specific query
   await tabsStore.getTabs()
   const allTabs = tabsStore.tabs || []
-  
+
   const now = new Date()
   const month = (now.getMonth() + 1).toString().padStart(2, '0')
   const day = now.getDate().toString().padStart(2, '0')
   const datePrefix = `TAB-${month}${day}` // TAB-MMDD
-  
+
   // Find latest tab with this prefix
-  const latestTab = allTabs.find(t => t.tab_number.startsWith(datePrefix))
-  
+  const latestTab = allTabs.find((t) => t.tab_number.startsWith(datePrefix))
+
   let nextSequence = 1
   if (latestTab) {
     const parts = latestTab.tab_number.split('-')
     if (parts.length === 3) {
-      const lastSeq = parseInt(parts[2] as string, 10)
-      if (!isNaN(lastSeq)) {
+      const lastSeq = Number.parseInt(parts[2] as string, 10)
+      if (!Number.isNaN(lastSeq)) {
         nextSequence = lastSeq + 1
       }
     }
   }
-  
+
   return `${datePrefix}-${nextSequence.toString().padStart(4, '0')}`
 }
 
 const onNewTabSubmit = form.handleSubmit(async (values) => {
-  const tabNumber = values.tab_number || await generateTabNumber()
-  
+  const tabNumber = values.tab_number || (await generateTabNumber())
+
   let notes = values.special_notes || ''
   if (values.user_id) {
     notes = `Customer: ${values.user_id}\n${notes}`
@@ -126,7 +134,7 @@ const onNewTabSubmit = form.handleSubmit(async (values) => {
     await tabsStore.getTab(tabId.toString())
     await tabsStore.getTabSplits(tabId.toString())
     mode.value = 'configure-item'
-    
+
     // Set as selected in global sheet
     const tabSheetStore = useTabSheetStore()
     tabSheetStore.selectedTabId = tabId
@@ -139,14 +147,14 @@ const addToTab = async () => {
 
   await tabsStore.addDrinkToTab({
     tabId: currentTab.value.id,
-    drink: { 
-      id: props.drink.id, 
-      price: props.drink.price || 0, 
-      name: props.drink.name 
+    drink: {
+      id: props.drink.id,
+      price: props.drink.price || 0,
+      name: props.drink.name,
     },
     quantity: quantity.value,
     specialInstructions: specialInstructions.value,
-    splitId: selectedSplitId.value
+    splitId: selectedSplitId.value,
   })
 
   // Set the selected tab in the global TabSheet so it's ready when opened
@@ -158,9 +166,9 @@ const addToTab = async () => {
 
 const splitOptions = computed(() => {
   if (!tabSplits.value?.length) return []
-  return tabSplits.value.map(s => ({
+  return tabSplits.value.map((s) => ({
     label: `Split ${s.split_number} (${s.status})`,
-    value: s.id
+    value: s.id,
   }))
 })
 </script>
@@ -179,16 +187,16 @@ const splitOptions = computed(() => {
         <!-- MODE: Select Tab -->
         <div v-if="mode === 'select-tab'" class="space-y-4">
           <div class="flex gap-2 mb-4">
-            <Button 
-              variant="outline" 
-              class="flex-1 text-gray-500" 
+            <Button
+              variant="outline"
+              class="flex-1 text-gray-500"
               :class="{ 'text-primary': !showNewTabForm }"
               @click="showNewTabForm = false"
             >
               Existing Tab
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               class="flex-1 text-gray-500"
               :class="{ 'text-primary': showNewTabForm }"
               @click="showNewTabForm = true"
@@ -216,9 +224,7 @@ const splitOptions = computed(() => {
                 </div>
               </div>
             </div>
-            <div v-else class="text-center py-8 text-muted-foreground">
-              No open tabs found.
-            </div>
+            <div v-else class="text-center py-8 text-muted-foreground">No open tabs found.</div>
           </div>
 
           <!-- New Tab Form -->
@@ -262,7 +268,9 @@ const splitOptions = computed(() => {
           <div class="bg-muted p-3 rounded-lg flex justify-between items-center">
             <div>
               <p class="text-xs text-muted-foreground">Selected Tab</p>
-              <p class="font-semibold">{{ currentTab?.status !== "closed" ? currentTab?.tab_number : null }}</p>
+              <p class="font-semibold">
+                {{ currentTab?.status !== 'closed' ? currentTab?.tab_number : null }}
+              </p>
             </div>
             <Button variant="ghost" size="sm" @click="mode = 'select-tab'">Change</Button>
           </div>
@@ -275,9 +283,13 @@ const splitOptions = computed(() => {
 
             <div class="grid gap-4">
               <div class="space-y-2">
-                <label class="text-sm font-medium">Quantity</label>
+                <div class="text-sm font-medium">Quantity</div>
                 <div class="flex items-center gap-3">
-                  <Button variant="outline" size="icon" @click="quantity = Math.max(1, quantity - 1)">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    @click="quantity = Math.max(1, quantity - 1)"
+                  >
                     <iconify-icon icon="lucide:minus" />
                   </Button>
                   <span class="text-xl font-bold w-8 text-center">{{ quantity }}</span>
@@ -288,8 +300,11 @@ const splitOptions = computed(() => {
               </div>
 
               <div class="space-y-2">
-                <label class="text-sm font-medium">Assign to Split (Optional)</label>
-                <select 
+                <label class="text-sm font-medium" for="assign-split"
+                  >Assign to Split (Optional)</label
+                >
+                <select
+                  id="assign-split"
                   v-model="selectedSplitId"
                   class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 >
@@ -304,8 +319,11 @@ const splitOptions = computed(() => {
               </div>
 
               <div class="space-y-2">
-                <label class="text-sm font-medium">Special Instructions</label>
-                <textarea 
+                <label class="text-sm font-medium" for="special-instructions"
+                  >Special Instructions</label
+                >
+                <textarea
+                  id="special-instructions"
                   v-model="specialInstructions"
                   class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   placeholder="e.g. No ice, extra lemon..."

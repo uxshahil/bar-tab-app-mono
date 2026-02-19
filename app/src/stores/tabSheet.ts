@@ -20,6 +20,6 @@ export const useTabSheetStore = defineStore('tab-sheet', () => {
     isOpen,
     selectedTabId,
     openTabSheet,
-    closeTabSheet
+    closeTabSheet,
   }
 })

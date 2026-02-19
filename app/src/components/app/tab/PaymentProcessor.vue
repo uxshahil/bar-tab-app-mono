@@ -7,16 +7,28 @@ import {
   DialogTitle,
   DialogClose,
 } from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+
 import { storeToRefs } from 'pinia'
 import { formatCurrency } from '@/utils/currency'
+import { toTypedSchema } from '@vee-validate/zod'
+import { useForm } from 'vee-validate'
+import * as z from 'zod'
 
 interface Props {
   tabId: number
 }
 
-interface Emits {
-  (e: 'payment-processed'): void
-}
+type Emits = (e: 'payment-processed') => void
 
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
@@ -24,42 +36,51 @@ const emit = defineEmits<Emits>()
 const tabsStore = useTabsStore()
 const { tab } = storeToRefs(tabsStore)
 
-const formData = ref({
-  amountPaid: 0,
-  tipAmount: 0,
-  paymentMethod: 'cash' as 'cash' | 'card' | 'mobile' | 'mixed',
+const formSchema = toTypedSchema(
+  z.object({
+    amountPaid: z.number().min(0.01, 'Amount paid must be greater than 0'),
+    tipAmount: z.number().min(0, 'Tip amount cannot be negative').default(0),
+    paymentMethod: z.enum(['cash', 'card', 'mobile', 'mixed']),
+  }),
+)
+
+const form = useForm({
+  validationSchema: formSchema,
+  initialValues: {
+    amountPaid: 0,
+    tipAmount: 0,
+    paymentMethod: 'cash',
+  },
 })
 
+const amountPaid = computed(() => form.values.amountPaid || 0)
+const tipAmount = computed(() => form.values.tipAmount || 0)
+
 const totalAmountPaid = computed(() => {
-  return formData.value.amountPaid + formData.value.tipAmount
+  return amountPaid.value + tipAmount.value
 })
 
 const balanceRemaining = computed(() => {
-  return tab.value?.total_owed ? tab.value.total_owed - formData.value.amountPaid : 0
+  return tab.value?.total_owed ? tab.value.total_owed - amountPaid.value : 0
 })
 
 const isOverpaid = computed(() => {
   return balanceRemaining.value < 0
 })
 
-const processPayment = async () => {
-  if (formData.value.amountPaid <= 0) {
-    console.error('Amount paid must be greater than 0')
-    return
-  }
-
+const onSubmit = form.handleSubmit(async (values) => {
   try {
     // Record the payment
     await tabsStore.createPayment({
       tab_id: props.tabId,
-      amount_paid: formData.value.amountPaid,
-      tip_added: formData.value.tipAmount,
-      payment_method: formData.value.paymentMethod,
+      amount_paid: values.amountPaid,
+      tip_added: values.tipAmount,
+      payment_method: values.paymentMethod,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any)
 
     // Update tab with new tip amount
-    const newTip = (tab.value?.tip_amount || 0) + formData.value.tipAmount
+    const newTip = (tab.value?.tip_amount || 0) + values.tipAmount
     const newTotal = (tab.value?.total_before_tip || 0) + newTip
 
     await tabsStore.updateTab(props.tabId, {
@@ -69,19 +90,13 @@ const processPayment = async () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any)
 
-    // If overpaid, the overflow becomes tip
-    if (isOverpaid.value) {
-      const tipOverflow = Math.abs(balanceRemaining.value)
-      console.log(`Added R${tipOverflow.toFixed(2)} as tip from overpayment`)
-    }
+    // If overpaid, the overflow becomes tip implicitly via balance calculations
 
     emit('payment-processed')
   } catch (error) {
     console.error('Error processing payment:', error)
   }
-}
-
-
+})
 </script>
 
 <template>
@@ -91,7 +106,7 @@ const processPayment = async () => {
         <DialogTitle>Process Payment</DialogTitle>
       </DialogHeader>
 
-      <div class="space-y-4 py-4">
+      <form @submit="onSubmit" class="space-y-4 py-4">
         <!-- Total Owed Display -->
         <div class="bg-blue-50 dark:bg-blue-950 p-4 rounded-lg">
           <p class="text-xs text-muted-foreground">Total Owed</p>
@@ -99,16 +114,15 @@ const processPayment = async () => {
         </div>
 
         <!-- Amount Paid -->
-        <div class="space-y-2">
-          <label class="text-sm font-medium">Amount Paid</label>
-          <input
-            v-model.number="formData.amountPaid"
-            type="number"
-            step="0.01"
-            class="w-full p-2 border rounded-md"
-            placeholder="0.00"
-          />
-        </div>
+        <FormField v-slot="{ componentField }" name="amountPaid">
+          <FormItem>
+            <FormLabel>Amount Paid</FormLabel>
+            <FormControl>
+              <Input type="number" step="0.01" placeholder="0.00" v-bind="componentField" />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </FormField>
 
         <!-- Balance Info -->
         <div
@@ -127,38 +141,47 @@ const processPayment = async () => {
         </div>
 
         <!-- Tip Amount -->
-        <div class="space-y-2">
-          <label class="text-sm font-medium">Tip Amount (Optional)</label>
-          <input
-            v-model.number="formData.tipAmount"
-            type="number"
-            step="0.01"
-            class="w-full p-2 border rounded-md"
-            placeholder="0.00"
-          />
-          <p class="text-xs text-muted-foreground">Adding tip separately from payment</p>
-        </div>
+        <FormField v-slot="{ componentField }" name="tipAmount">
+          <FormItem>
+            <FormLabel>Tip Amount (Optional)</FormLabel>
+            <FormControl>
+              <Input type="number" step="0.01" placeholder="0.00" v-bind="componentField" />
+            </FormControl>
+            <p class="text-xs text-muted-foreground">Adding tip separately from payment</p>
+            <FormMessage />
+          </FormItem>
+        </FormField>
 
         <!-- Payment Method -->
-        <div class="space-y-2">
-          <label class="text-sm font-medium">Payment Method</label>
-          <select v-model="formData.paymentMethod" class="w-full p-2 border rounded-md">
-            <option value="cash">Cash</option>
-            <option value="card">Card</option>
-            <option value="mobile">Mobile</option>
-            <option value="mixed">Mixed</option>
-          </select>
-        </div>
+        <FormField v-slot="{ componentField }" name="paymentMethod">
+          <FormItem>
+            <FormLabel>Payment Method</FormLabel>
+            <Select v-bind="componentField">
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a payment method" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                <SelectItem value="cash">Cash</SelectItem>
+                <SelectItem value="card">Card</SelectItem>
+                <SelectItem value="mobile">Mobile</SelectItem>
+                <SelectItem value="mixed">Mixed</SelectItem>
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        </FormField>
 
         <!-- Summary -->
         <div class="bg-muted p-3 rounded-lg space-y-1 text-sm">
           <div class="flex justify-between">
             <span>Amount Paid:</span>
-            <span>{{ formatCurrency(formData.amountPaid) }}</span>
+            <span>{{ formatCurrency(amountPaid) }}</span>
           </div>
           <div class="flex justify-between">
             <span>Tip:</span>
-            <span>{{ formatCurrency(formData.tipAmount) }}</span>
+            <span>{{ formatCurrency(tipAmount) }}</span>
           </div>
           <div class="flex justify-between font-bold border-t pt-1">
             <span>Total Payment:</span>
@@ -168,14 +191,12 @@ const processPayment = async () => {
 
         <!-- Actions -->
         <div class="flex gap-2 pt-4">
-          <Button @click="processPayment" :disabled="formData.amountPaid <= 0" class="flex-1">
-            Process Payment
-          </Button>
+          <Button type="submit" class="flex-1"> Process Payment </Button>
           <DialogClose as-child>
             <Button variant="outline" class="flex-1">Cancel</Button>
           </DialogClose>
         </div>
-      </div>
+      </form>
     </DialogContent>
   </Dialog>
 </template>

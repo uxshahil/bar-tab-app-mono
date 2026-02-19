@@ -13,5 +13,3 @@ defineEmits(['commit'])
     @keyup.enter="($event.target as HTMLInputElement).blur()"
   />
 </template>
-
-<style scoped></style>

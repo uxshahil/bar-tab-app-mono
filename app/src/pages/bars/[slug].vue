@@ -27,15 +27,14 @@ const getBar = async () => {
       menu_name: menu.menu_name ?? undefined,
     }))
   }
-
-  console.log(menus.value)
 }
 
 await getBar()
 </script>
 
 <template>
-  <Table v-if="bar">
+  <!-- prettier-ignore -->
+  <Table v-if="bar"> <!-- NOSONAR -->
     <TableRow>
       <TableHead> Name </TableHead>
       <TableCell> {{ bar.name }} </TableCell>
@@ -46,13 +45,7 @@ await getBar()
         <RouterLink :to="`/${menu.menu_name?.toLowerCase()}`">
           {{ menu.menu_name }}
         </RouterLink>
-        <!-- <div class="flex" :v-for="menu in menus" :key="`${menu}`"> -->
-        <!-- <p>{{ JSON.stringify(menus) }}</p> -->
-        <!-- <RouterLink :to="`/${(menu?.menu_name || '').toLowerCase()}`" /> -->
-        <!-- </div> -->
       </TableCell>
     </TableRow>
   </Table>
 </template>
-
-<style></style>

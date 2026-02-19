@@ -8,8 +8,8 @@ You only need **Docker** installed to run this project. No local Node.js or `npm
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/uxshahil/bar-tab-app-simplified.git
-    cd bar-tab-app-simplified
+    git clone https://github.com/uxshahil/bar-tab-app-mono.git
+    cd bar-tab-app-mono
     ```
 
 2.  **Start the application:**
@@ -35,10 +35,3 @@ This project is configured to run entirely within Docker containers.
 -   `app/` - Vue.js Frontend
 -   `api/` - Node.js/Express Backend
 -   `docker-compose.yml` - Orchestration for App and API
-
-## 🛑 Stopping the App
-
-To stop the containers:
-```bash
-docker compose down
-```

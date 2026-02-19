@@ -1,5 +1,5 @@
 /* eslint-env node */
-import { execSync } from 'child_process';
+import { execSync } from 'node:child_process';
 import { fakerAF_ZA as faker } from '@faker-js/faker';
 import { createClient } from '@supabase/supabase-js'
 import slugify from 'slugify';
@@ -230,11 +230,11 @@ const seedDatabase = async () => {
   let userId
   const testUserId = await PrimaryTestUserExists()
 
-  if (!testUserId) {
+  if (testUserId) {
+    userId = testUserId
+  } else {
     const primaryTestUserId = await createPrimaryTestUser()
     userId = primaryTestUserId
-  } else {
-    userId = testUserId
   }
 
   console.log(`✅ Using test user with ID: ${userId}`);
@@ -243,7 +243,7 @@ const seedDatabase = async () => {
   const barNames = ['Doppio Zero', 'Orez Oippod'];
   const menuNames = ['Drinks', 'Food'];
   const barIds = await seedBars(barNames);
-  const menuIdNames = await seedMenus(menuNames, barIds);
+  const menuIdNames = await seedMenus(menuNames);
   await seedBarMenus(barIds[barIds.length - 1].id, menuIdNames.map(m => ({ id: m.id, name: m.name })));
 
   const apiGlasses = await import('../api_data/glass.json', { with: { type: 'json' } });

@@ -12,11 +12,11 @@ export const columns: ColumnDef<MenusWithCategories[0]>[] = [
         RouterLink,
         {
           to: `/menu/${slug}`,
-          class: 'text-left font-medium hover:bg-muted block w-full'
+          class: 'text-left font-medium hover:bg-muted block w-full',
         },
-        () => row.getValue('name')
+        () => row.getValue('name'),
       )
-    }
+    },
   },
   {
     accessorKey: 'menu_item_category',
@@ -35,18 +35,18 @@ export const columns: ColumnDef<MenusWithCategories[0]>[] = [
       return h(
         'div',
         { class: 'text-left flex flex-wrap gap-2' },
-        categories.map(category => {
+        categories.map((category) => {
           const slug = category?.slug
           return h(
             RouterLink,
             {
-              to: `/menus/${row.original.slug}/${slug.toLowerCase().replace(/\s+/g, '-')}`,
-              class: `text-left`
+              to: `/menus/${row.original.slug}/${slug.toLowerCase().replaceAll(/\s+/g, '-')}`,
+              class: `text-left`,
             },
-            () => category.name
+            () => category.name,
           )
-        })
+        }),
       )
-    }
-  }
+    },
+  },
 ]

@@ -59,16 +59,13 @@ watch(
             meta: {
               onAddToTab,
               userRole: authStore.profile?.user_role,
-              hideActionsMenu: true
-            }
+              hideActionsMenu: true,
+            },
           }"
         />
       </div>
     </div>
 
-    <AppAddToTab 
-      v-model:open="isAddToTabOpen"
-      :drink="selectedDrink"
-    />
+    <AppAddToTab v-model:open="isAddToTabOpen" :drink="selectedDrink" />
   </div>
 </template>

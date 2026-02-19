@@ -1,7 +1,7 @@
 export enum UserRole {
   Admin = 'admin',
   BarManager = 'bar-manager',
-  BarStaff = 'bar-staff'
+  BarStaff = 'bar-staff',
 }
 
 export interface LoginForm {

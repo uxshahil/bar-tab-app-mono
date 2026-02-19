@@ -1,10 +1,5 @@
 import type { QueryData } from '@supabase/supabase-js'
-import type {
-  tabsQuery,
-  tabQuery,
-  userTabsQuery,
-  openTabsQuery,
-} from '../queries/tabQueries'
+import type { tabsQuery, tabQuery, userTabsQuery, openTabsQuery } from '../queries/tabQueries'
 
 export type Tab = QueryData<ReturnType<typeof tabQuery>> & {
   remaining_balance?: number
@@ -107,23 +102,23 @@ export enum TabStatus {
   OPEN = 'open',
   CLOSED = 'closed',
   SETTLED = 'settled',
-  SPLIT = 'split'
+  SPLIT = 'split',
 }
 
 export enum TabSplitStatus {
   PENDING = 'pending',
-  SETTLED = 'settled'
+  SETTLED = 'settled',
 }
 
 export enum PaymentMethod {
   CASH = 'cash',
   CARD = 'card',
   MOBILE = 'mobile',
-  MIXED = 'mixed'
+  MIXED = 'mixed',
 }
 
 export enum PaymentStatus {
   PENDING = 'pending',
   COMPLETED = 'completed',
-  FAILED = 'failed'
+  FAILED = 'failed',
 }

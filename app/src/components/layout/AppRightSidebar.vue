@@ -32,25 +32,27 @@ watch(
   () => route.query.tabId,
   (newTabId) => {
     selectedTabId.value = (newTabId as string) || null
-  }
+  },
 )
 </script>
 
 <template>
-  <aside 
+  <aside
     class="h-full border-l bg-muted/40 flex flex-col transition-[width] duration-300 ease-in-out overflow-hidden"
     :class="{ 'w-96': rightSidebarOpen, 'w-0 border-l-0': !rightSidebarOpen }"
   >
     <!-- Header (matches Sidebar header height) -->
-    <div class="flex h-16 items-center border-b px-4 shrink-0 justify-between bg-background/50 backdrop-blur">
+    <div
+      class="flex h-16 items-center border-b px-4 shrink-0 justify-between bg-background/50 backdrop-blur"
+    >
       <h2 class="font-semibold text-lg">
         {{ selectedTabId ? 'Tab Details' : 'Active Tabs' }}
       </h2>
-      <Button 
-        v-if="selectedTabId" 
-        variant="ghost" 
-        size="icon" 
-        @click="clearSelection" 
+      <Button
+        v-if="selectedTabId"
+        variant="ghost"
+        size="icon"
+        @click="clearSelection"
         class="h-8 w-8 text-muted-foreground hover:text-foreground"
       >
         <iconify-icon icon="lucide:x" />

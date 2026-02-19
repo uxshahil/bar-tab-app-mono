@@ -16,12 +16,12 @@ export const columns: ColumnDef<Bars[0]>[] = [
           RouterLink,
           {
             to: `/bars/${slug}`,
-            class: `text-left font-medium`
+            class: `text-left font-medium`,
           },
-          () => row.getValue('name')
-        )
+          () => row.getValue('name'),
+        ),
       )
-    }
+    },
   },
   {
     accessorKey: 'bar_menu',
@@ -42,12 +42,12 @@ export const columns: ColumnDef<Bars[0]>[] = [
             RouterLink,
             {
               to: `/${(m.menu_name || '').toLowerCase()}`,
-              class: `text-left font-medium`
+              class: `text-left font-medium`,
             },
-            () => m.menu_name
-          )
-        )
+            () => m.menu_name,
+          ),
+        ),
       )
-    }
-  }
+    },
+  },
 ]

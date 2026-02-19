@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS public.tab_split(
   amount_paid numeric(10, 2) NOT NULL DEFAULT 0,
   tip_amount numeric(10, 2) DEFAULT 0,
   -- Status
-  status text NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'settled')),
+  status text NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'settled')), -- NOSONAR
   -- Metadata
   created_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,

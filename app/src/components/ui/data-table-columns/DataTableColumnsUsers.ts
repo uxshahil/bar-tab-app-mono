@@ -6,11 +6,6 @@ import type { Profiles } from '@/services/supabase/types/profileTypes'
 import profileApi from '@/services/api/profileApi'
 
 const { deleteProfile } = profileApi
-// const profileStore = useUsersStore();
-
-
-
-// const updateUser = ref()
 
 export const columns: ColumnDef<Profiles[0]>[] = [
   {
@@ -43,8 +38,6 @@ export const columns: ColumnDef<Profiles[0]>[] = [
     cell: ({ row, table }) => {
       const user = row.original
 
-      console.log(JSON.stringify(user))
-
       return h(
         'div',
         { class: 'relative' },
@@ -53,11 +46,11 @@ export const columns: ColumnDef<Profiles[0]>[] = [
             id: user.id,
             name: user.username,
             editFn: () => {
-                 // @ts-ignore
-                 // eslint-disable-next-line
-                 table.options.meta?.onEditUser?.(user)
+              // @ts-expect-error - Custom meta property
+
+              table.options.meta?.onEditUser?.(user)
             },
-            deleteFn: () => deleteProfile({"id": user?.id} as DeleteUser),
+            deleteFn: () => deleteProfile({ id: user?.id } as DeleteUser),
           },
         }),
       )

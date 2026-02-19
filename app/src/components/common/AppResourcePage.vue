@@ -11,12 +11,12 @@ const props = defineProps<{
   columns: ColumnDef<TData, TValue>[]
   loading?: boolean
   emptyText?: string
-  options?: any
+  options?: Record<string, unknown>
   paginationKey?: string
 }>()
 
 const emit = defineEmits<{
-  (e: 'pagination-change', pagination: PaginationState): void
+  'pagination-change': [pagination: PaginationState]
 }>()
 
 const pageStore = usePageStore()
@@ -25,23 +25,21 @@ const pageStore = usePageStore()
 pageStore.pageData.title = props.title
 
 // Watch for title changes just in case
-watch(() => props.title, (newTitle) => {
+watch(
+  () => props.title,
+  (newTitle) => {
     pageStore.pageData.title = newTitle
-})
-
+  },
+)
 </script>
 
 <template>
   <div class="relative w-full h-full space-y-4">
     <div v-if="$slots.actions" class="flex justify-end mb-4">
-        <slot name="actions"></slot>
+      <slot name="actions"></slot>
     </div>
 
-    <DataTableSkeleton 
-      v-if="loading || !data" 
-      :column-count="columns.length"
-      :row-count="10"
-    />
+    <DataTableSkeleton v-if="loading || !data" :column-count="columns.length" :row-count="10" />
 
     <DataTable
       v-else
@@ -54,7 +52,7 @@ watch(() => props.title, (newTitle) => {
       :pagination-key="paginationKey"
       @pagination-change="(val) => emit('pagination-change', val)"
     />
-    
+
     <!-- Slot for Sheets/Modals that live alongside the table -->
     <slot name="sheet"></slot>
   </div>
