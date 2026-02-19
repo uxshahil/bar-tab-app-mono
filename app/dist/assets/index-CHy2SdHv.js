@@ -1,0 +1,1 @@
+import{d as e,aH as r,c as o,o as a,aI as s}from"./index-CpUHLich.js";const i=e({__name:"index",setup(t){return r().setError({error:"Eating is cheating!",customCode:404}),(n,c)=>(a(),o(s))}});export{i as default};

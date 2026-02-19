@@ -1,0 +1,1 @@
+import{d as s,o as a,q as n,x as o,g as r,ae as l}from"./index-CpUHLich.js";const m=s({__name:"Skeleton",props:{class:{}},setup(p){return(e,t)=>(a(),n("div",{class:o(r(l)("animate-pulse rounded-md bg-muted",e.$props.class))},null,2))}});export{m as _};

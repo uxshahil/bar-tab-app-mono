@@ -1,0 +1,52 @@
+
+services:
+  # Express API
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: api
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - PORT=${PORT}
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+    networks:
+      - bar-tab-network
+    ports:
+      - "3001:3001"
+    expose:
+      - 3001
+
+  # Vue App (Vite)
+  app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+      args:
+        VITE_SUPABASE_URL: ${VITE_SUPABASE_URL}
+        VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY}
+        VITE_API_URL: ${VITE_API_URL}
+        VITE_VAT: ${VITE_VAT}
+    container_name: app
+    restart: unless-stopped
+    environment:
+      - TESTING_USER_EMAIL=${TESTING_USER_EMAIL}
+      - VITE_SUPABASE_URL=${VITE_SUPABASE_URL}
+      - VITE_SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY}
+      - SUPABASE_PROJECT_REF=${SUPABASE_PROJECT_REF}
+      - SERVICE_ROLE_KEY=${SERVICE_ROLE_KEY}
+      - VITE_API_URL=${VITE_API_URL}
+    networks:
+      - bar-tab-network
+    ports:
+      - "3000:3000"
+    expose:
+      - 3000
+
+networks:
+  bar-tab-network:
+    driver: bridge
+
+# frhZkYY8pYf%

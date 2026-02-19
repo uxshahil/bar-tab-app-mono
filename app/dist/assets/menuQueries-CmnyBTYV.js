@@ -1,0 +1,1 @@
+import{aO as e}from"./index-CpUHLich.js";e.from("menu").select("*");const t=s=>e.from("menu").select("*").eq("slug",s).single(),u=e.from("menu").select("*,menu_item_category (id, name, slug)");export{t as a,u as m};

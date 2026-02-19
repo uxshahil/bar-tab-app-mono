@@ -1,0 +1,1 @@
+import{d as e,aH as o,c as r,o as a,aI as t}from"./index-CpUHLich.js";const m=e({__name:"[...catchAll]",setup(s){return o().setError({error:"Page Not Found",customCode:404}),(c,n)=>(a(),r(t))}});export{m as default};

@@ -1,0 +1,30 @@
+Complete CocktailDB Data Fetch Summary
+========================================
+Date: Mon Feb  2 13:37:36 SAST 2026
+
+BASIC LISTS:
+- Categories:        0 lines
+- Ingredients:        0 lines  
+- Glass types:        0 lines
+
+DRINKS BY CATEGORY:
+Total categories: 11
+Categories with drinks: 11
+Total drinks collected: 413
+
+Categories processed:
+  - Beer: 14 drinks
+  - Cocktail: 100 drinks
+  - Cocoa: 9 drinks
+  - Coffee / Tea: 25 drinks
+  - Homemade Liqueur: 12 drinks
+  - Ordinary Drink: 100 drinks
+  - Other / Unknown: 34 drinks
+  - Punch / Party Drink: 40 drinks
+  - Shake: 18 drinks
+  - Shot: 50 drinks
+  - Soft Drink: 11 drinks
+
+OUTPUT FILES:
+  • all_drinks.json: 413 drinks (   70390 bytes)
+  • drinks_by_category/: Individual category files

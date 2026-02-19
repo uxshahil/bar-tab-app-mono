@@ -1,0 +1,1 @@
+import{aO as a}from"./index-CpUHLich.js";const s=a.from("bar").select("*, bar_menu(*)"),m=e=>a.from("bar").select("*, bar_menu (menu_name)").eq("slug",e).single(),n=e=>a.from("bar").select("*, bar_menu (menu_name)").eq("id",e).single();export{s as a,n as b,m as c};

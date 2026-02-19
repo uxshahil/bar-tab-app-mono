@@ -1,0 +1,20 @@
+Data Verification
+=================
+Total drinks in all_drinks.json: 413
+
+Sample drinks (first 3):
+
+{"strDrink":"110 in the shade",
+  "strDrinkThumb":"https:\/\/www.thecocktaildb.com\/images\/media\/drink\/xxyywq1454511117.jpg",
+  "idDrink":"15423",
+  "strCategory":"Beer"}
+
+{"strDrink":"Black & Tan",
+  "strDrinkThumb":"https:\/\/www.thecocktaildb.com\/images\/media\/drink\/rwpswp1454511017.jpg",
+  "idDrink":"13282",
+  "strCategory":"Beer"}
+
+{"strDrink":"Black and Brown",
+  "strDrinkThumb":"https:\/\/www.thecocktaildb.com\/images\/media\/drink\/wwuvxv1472668899.jpg",
+  "idDrink":"16403",
+  "strCategory":"Beer"}

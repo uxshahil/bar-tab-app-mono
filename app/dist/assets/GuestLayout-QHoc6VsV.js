@@ -1,0 +1,1 @@
+import{_ as t}from"./_plugin-vue_export-helper-DlAUqK2U.js";import{o as s,q as o,v as r}from"./index-CpUHLich.js";const c={},n={class:"items-center justify-center h-screen pt-5 sm:flex sm:pt-0"};function a(e,f){return s(),o("div",n,[r(e.$slots,"default")])}const m=t(c,[["render",a]]);export{m as default};
