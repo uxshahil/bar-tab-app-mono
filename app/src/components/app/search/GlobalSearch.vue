@@ -1,8 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
 import { useDebounceFn } from '@vueuse/core'
-import { Input } from '@/components/ui/input'
 
 const router = useRouter()
 const route = useRoute()

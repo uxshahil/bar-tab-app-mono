@@ -1,8 +1,6 @@
-import type { ColumnDef } from '@tanstack/vue-table'
 import type { Drinks } from '@/services/supabase/types/drinkTypes'
-import { RouterLink } from 'vue-router'
-import { h } from 'vue'
 import { formatCurrency } from '@/utils/currency'
+import type { ColumnDef } from '@tanstack/vue-table'
 
 export const columns: ColumnDef<Drinks[0]>[] = [
   {

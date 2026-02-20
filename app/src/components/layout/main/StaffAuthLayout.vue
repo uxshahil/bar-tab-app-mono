@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { menuKey } from '@/providers/injectionKeys'
-import AppRightSidebar from '@/components/layout/AppRightSidebar.vue'
 
 const { pageData } = storeToRefs(usePageStore())
 

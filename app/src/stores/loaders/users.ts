@@ -1,9 +1,9 @@
-import type { Profile as User, Profiles as Users } from '@/services/supabase/types/profileTypes'
-import type { CreateNewUser, EditUser, DeleteUser } from '@/interfaces/UserInterfaces'
+import type { CreateNewUser, DeleteUser, EditUser } from '@/interfaces/UserInterfaces'
 import {
-  profilesQuery as usersQuery,
   profileQuery as userQuery,
+  profilesQuery as usersQuery,
 } from '@/services/supabase/queries/profileQueries'
+import type { Profile as User, Profiles as Users } from '@/services/supabase/types/profileTypes'
 // Change the import to use named exports
 import profileApi from '@/services/api/profileApi'
 import { socket } from '@/services/socket/socket'

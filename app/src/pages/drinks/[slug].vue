@@ -1,15 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, computed, watch, ref } from 'vue'
-import { useRoute } from 'vue-router'
-import { useDrinksStore } from '@/stores/loaders/drinks'
-import { storeToRefs } from 'pinia'
-
 // Add to Tab Logic
-import { useAddToTabStore } from '@/stores/ui/addToTab'
-import { Button } from '@/components/ui/button'
-import AppDrinkIcon from '@/components/app/drinks/AppDrinkIcon.vue'
-import { useAuthStore } from '@/stores/auth'
-import Skeleton from '@/components/ui/skeleton/Skeleton.vue'
 
 const route = useRoute()
 const drinksStore = useDrinksStore()

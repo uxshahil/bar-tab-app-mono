@@ -164,25 +164,8 @@
 </template>
 
 <script setup lang="ts">
-import { useTabsStore } from '@/stores/loaders/tabs'
-import { useDrinksStore } from '@/stores/loaders/drinks'
-import { useAuthStore } from '@/stores/auth'
-import { storeToRefs } from 'pinia'
-import type { Tabs } from '@/services/supabase/types/tabTypes'
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
+import { useForm } from 'vee-validate'
 import * as z from 'zod'
 
 const tabsStore = useTabsStore()

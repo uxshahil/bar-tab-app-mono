@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { barQuery } from '@/services/supabase/queries/barQueries'
 import type { Bar, BarMenus } from '@/services/supabase/types/barTypes'
-import { RouterLink } from 'vue-router'
 
 const userRouteWithIdParam = useRoute('/bars/[slug]')
 

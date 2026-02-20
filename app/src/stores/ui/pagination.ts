@@ -1,5 +1,3 @@
-import { defineStore } from 'pinia'
-
 interface PaginationState {
   pageIndex: number
   pageSize: number

@@ -1,11 +1,11 @@
 import { supabase } from '@/providers/supabaseClient'
 import type {
   Tab,
-  TabItem,
-  TabSplit,
   TabInsert,
+  TabItem,
   TabItemInsert,
   TabPaymentInsert,
+  TabSplit,
   TabSplitInsert,
 } from '@/services/supabase/types/tabTypes'
 

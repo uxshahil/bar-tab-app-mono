@@ -1,9 +1,5 @@
 <script setup lang="ts">
-import { ref, nextTick, computed } from 'vue'
 import { formatCurrency } from '@/utils/currency'
-import { useAuthStore } from '@/stores/auth'
-import { storeToRefs } from 'pinia'
-import { Input } from '@/components/ui/input'
 
 const props = defineProps<{
   value: number

@@ -1,12 +1,4 @@
 <script setup lang="ts">
-import { useTabsStore } from '@/stores/loaders/tabs'
-import { storeToRefs } from 'pinia'
-import { profileQuery } from '@/services/supabase/queries/profileQueries'
-import { barByIdQuery } from '@/services/supabase/queries/barQueries'
-import type { Profile } from '@/services/supabase/types/profileTypes'
-import type { TabItem } from '@/services/supabase/types/tabTypes'
-import { Dialog, DialogContent } from '@/components/ui/dialog'
-
 const tabsStore = useTabsStore()
 const { tab, tabItems, tabSplits, tabPayments } = storeToRefs(tabsStore)
 
@@ -210,8 +202,6 @@ const getTabDuration = (dateString: string) => {
   return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`
 }
 
-import AppSplitBillSheet from '@/components/app/tab/AppSplitBillSheet.vue'
-
 const splitBillSheetStore = useSplitBillSheetStore()
 
 // Split Logic
@@ -300,8 +290,8 @@ const updateQuantity = async (item: TabItem, change: number) => {
   })
 }
 
-import ItemRow from './ItemRow.vue'
 import AppReceipt from './AppReceipt.vue'
+import ItemRow from './ItemRow.vue'
 
 const showReceipt = ref(false)
 

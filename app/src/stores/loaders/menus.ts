@@ -1,14 +1,3 @@
-import { defineStore } from 'pinia'
-import { ref } from 'vue'
-import {
-  menusWithCategoriesQuery as menusQuery,
-  menuQuery,
-} from '@/services/supabase/queries/menuQueries'
-import type { MenusWithCategories, Menu } from '@/services/supabase/types/menuTypes'
-import menuApi from '@/services/api/menuApi'
-import { useErrorStore } from '@/stores/error'
-import { socket } from '@/services/socket/socket'
-
 export const useMenusStore = defineStore('menus-store', () => {
   const menus = ref<MenusWithCategories | null>(null)
   const menu = ref<Menu | null>(null)

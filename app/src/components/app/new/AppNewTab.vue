@@ -1,16 +1,7 @@
 <script setup lang="ts">
-import { useTabsStore } from '@/stores/loaders/tabs'
-import { useAuthStore } from '@/stores/auth'
-import { storeToRefs } from 'pinia'
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { Button } from '@/components/ui/button'
-import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
+import { useForm } from 'vee-validate'
 import * as z from 'zod'
-import { todaysTabsCountQuery } from '@/services/supabase/queries/tabQueries'
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 
 const newTabSheetStore = useNewTabSheetStore()
 const { isOpen } = storeToRefs(newTabSheetStore)

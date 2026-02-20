@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { menuKey } from '@/providers/injectionKeys'
-import TopNavbar from '@/components/layout/TopNavbar.vue'
 
 const { pageData } = storeToRefs(usePageStore())
 

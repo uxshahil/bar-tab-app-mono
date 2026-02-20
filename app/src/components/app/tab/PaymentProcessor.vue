@@ -1,24 +1,4 @@
 <script setup lang="ts">
-import { useTabsStore } from '@/stores/loaders/tabs'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogClose,
-} from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-
-import { storeToRefs } from 'pinia'
 import { formatCurrency } from '@/utils/currency'
 import { toTypedSchema } from '@vee-validate/zod'
 import { useForm } from 'vee-validate'

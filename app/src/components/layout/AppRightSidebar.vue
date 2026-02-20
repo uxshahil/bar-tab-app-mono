@@ -1,8 +1,4 @@
 <script setup lang="ts">
-import { useRoute, useRouter } from 'vue-router'
-import AppTabsList from '@/components/app/tab/AppTabsList.vue'
-import AppTabDetails from '@/components/app/tab/AppTabDetails.vue'
-import { Button } from '@/components/ui/button'
 import { menuKey, type MenuInjectionOptions } from '@/providers/injectionKeys'
 
 const route = useRoute()

@@ -1,10 +1,7 @@
 <script setup lang="ts">
-import { Button } from '@/components/ui/button'
-import { useNow } from '@vueuse/core'
-import { formatCurrency } from '@/utils/currency'
 import type { TabItem } from '@/services/supabase/types/tabTypes'
-
-import { reactive, watch } from 'vue'
+import { formatCurrency } from '@/utils/currency'
+import { useNow } from '@vueuse/core'
 
 const props = defineProps<{
   item: TabItem

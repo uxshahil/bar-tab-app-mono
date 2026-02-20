@@ -1,30 +1,7 @@
 <script setup lang="ts">
-import { computed, watch } from 'vue'
-import { storeToRefs } from 'pinia'
-import type { CreateNewDrink, EditDrink } from '@/interfaces/DrinkInterfaces'
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-} from '@/components/ui/sheet'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
+import { useForm } from 'vee-validate'
 import * as z from 'zod'
-import drinkApi from '@/services/api/drinkApi'
-import { useDrinksStore } from '@/stores/loaders/drinks'
 
 const drinkSheetStore = useDrinkSheetStore()
 const { isOpen, drinkId } = storeToRefs(drinkSheetStore)

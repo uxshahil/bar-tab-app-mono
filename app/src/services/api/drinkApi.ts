@@ -1,4 +1,4 @@
-import type { CreateNewDrink, EditDrink, DeleteDrink } from '@/interfaces/DrinkInterfaces'
+import type { CreateNewDrink, DeleteDrink, EditDrink } from '@/interfaces/DrinkInterfaces'
 import axios from 'axios'
 
 const createDrink = async (drinkData: Partial<CreateNewDrink>) => {

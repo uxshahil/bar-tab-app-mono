@@ -1,26 +1,4 @@
 <script setup lang="ts" generic="TData, TValue">
-import type { ColumnDef, PaginationState, TableOptions, TableMeta } from '@tanstack/vue-table'
-import {
-  FlexRender,
-  getCoreRowModel,
-  getPaginationRowModel,
-  useVueTable,
-} from '@tanstack/vue-table'
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationFirst,
-  PaginationItem,
-  PaginationLast,
-  PaginationNext,
-  PaginationPrevious,
-} from '@/components/ui/pagination'
-
-// ... imports
-import { usePaginationStore } from '@/stores/ui/pagination'
-import { computed, ref } from 'vue'
-
 const props = defineProps<{
   columns: ColumnDef<TData, TValue>[]
   data: TData[]

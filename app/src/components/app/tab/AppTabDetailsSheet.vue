@@ -1,8 +1,4 @@
 <script setup lang="ts">
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
-import AppTabDetails from '@/components/app/tab/AppTabDetails.vue'
-import { storeToRefs } from 'pinia'
-
 const tabSheetStore = useTabSheetStore()
 const { isOpen, selectedTabId } = storeToRefs(tabSheetStore)
 const { closeTabSheet } = tabSheetStore

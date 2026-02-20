@@ -1,13 +1,13 @@
-import {
-  drinksByCategoryQuery,
-  updateDrinkQuery,
-  deleteDrinkQuery,
-  fetchDrinks as fetchDrinksQuery, // Rename to avoid conflict if needed, or just use fetchDrinks
-} from '@/services/supabase/queries/drinkQueries'
 import drinkApi from '@/services/api/drinkApi'
-import { useMemoize } from '@vueuse/core'
-import type { Drink, Drinks } from '@/services/supabase/types/drinkTypes'
 import { socket } from '@/services/socket/socket'
+import {
+  deleteDrinkQuery,
+  drinksByCategoryQuery,
+  fetchDrinks as fetchDrinksQuery,
+  updateDrinkQuery,
+} from '@/services/supabase/queries/drinkQueries'
+import type { Drink, Drinks } from '@/services/supabase/types/drinkTypes'
+import { useMemoize } from '@vueuse/core'
 
 export const useDrinksStore = defineStore('drinks-store', () => {
   const drinks = ref<Drinks | null>(null)

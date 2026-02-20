@@ -1,9 +1,6 @@
 <script setup lang="ts">
-import { useDark, useToggle } from '@vueuse/core'
-import { useRouter, useRoute } from 'vue-router'
-import AppActiveTabs from '@/components/app/tab/AppActiveTabs.vue'
-import GlobalSearch from '@/components/app/search/GlobalSearch.vue'
 import type { Tabs } from '@/services/supabase/types/tabTypes'
+import { useDark, useToggle } from '@vueuse/core'
 
 const authStore = useAuthStore()
 const { profile } = storeToRefs(authStore)

@@ -1,5 +1,5 @@
 import type { QueryData } from '@supabase/supabase-js'
-import type { tabsQuery, tabQuery, userTabsQuery, openTabsQuery } from '../queries/tabQueries'
+import type { openTabsQuery, tabQuery, tabsQuery, userTabsQuery } from '../queries/tabQueries'
 
 export type Tab = QueryData<ReturnType<typeof tabQuery>> & {
   remaining_balance?: number

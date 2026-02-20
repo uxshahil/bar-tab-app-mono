@@ -1,11 +1,4 @@
 import type { ColumnDef } from '@tanstack/vue-table'
-import type { Drinks } from '@/services/supabase/types/drinkTypes'
-import { RouterLink } from 'vue-router'
-import { h } from 'vue'
-import DropdownAction from '@/components/ui/data-table-drop-down/DataTableDropDown.vue'
-import EditablePriceCell from '@/components/ui/data-table-cells/EditablePriceCell.vue'
-import { Button } from '@/components/ui/button'
-import { useDrinksStore } from '@/stores/loaders/drinks'
 
 const { updateDrink, deleteDrink } = useDrinksStore()
 

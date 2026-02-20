@@ -1,11 +1,3 @@
-import { defineStore } from 'pinia'
-import { ref } from 'vue'
-import { barsQuery, barByIdQuery } from '@/services/supabase/queries/barQueries'
-import type { Bars, Bar } from '@/services/supabase/types/barTypes'
-import barApi from '@/services/api/barApi'
-import { useErrorStore } from '@/stores/error'
-import { socket } from '@/services/socket/socket'
-
 export const useBarsStore = defineStore('bars-store', () => {
   const bars = ref<Bars | null>(null)
   const bar = ref<Bar | null>(null)

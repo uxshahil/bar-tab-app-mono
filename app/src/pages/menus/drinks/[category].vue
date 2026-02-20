@@ -1,13 +1,4 @@
 <script setup lang="ts">
-import { columns } from '@/components/ui/data-table-columns/DataTableColumnsDrinks'
-import { useDrinksStore } from '@/stores/loaders/drinks'
-import { useRoute } from 'vue-router'
-import { storeToRefs } from 'pinia'
-import AppResourcePage from '@/components/common/AppResourcePage.vue'
-import { useAddToTabStore } from '@/stores/ui/addToTab'
-import { useAuthStore } from '@/stores/auth'
-import type { Drink } from '@/services/supabase/types/drinkTypes'
-
 const route = useRoute()
 const drinksStore = useDrinksStore()
 const addToTabStore = useAddToTabStore()

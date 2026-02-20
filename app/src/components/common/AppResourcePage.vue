@@ -1,9 +1,5 @@
 <script setup lang="ts" generic="TData, TValue">
-import { usePageStore } from '@/stores/page'
 import type { ColumnDef, PaginationState } from '@tanstack/vue-table'
-import { watch } from 'vue'
-import DataTable from '@/components/ui/data-table/DataTable.vue'
-import DataTableSkeleton from '@/components/ui/data-table/DataTableSkeleton.vue'
 
 const props = defineProps<{
   title: string

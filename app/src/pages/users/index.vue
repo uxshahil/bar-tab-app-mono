@@ -1,13 +1,4 @@
 <script setup lang="ts">
-import { columns } from '@/components/ui/data-table-columns/DataTableColumnsUsers'
-import { useUsersStore } from '@/stores/loaders/users'
-import { storeToRefs } from 'pinia'
-import AppResourcePage from '@/components/common/AppResourcePage.vue'
-import type { Profile } from '@/services/supabase/types/profileTypes'
-
-import { useRoute } from 'vue-router'
-import { watch } from 'vue'
-
 const usersStore = useUsersStore()
 const { users } = storeToRefs(usersStore)
 const route = useRoute()

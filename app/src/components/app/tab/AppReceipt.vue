@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import type { Tab, TabItem } from '@/services/supabase/types/tabTypes'
 import { formatCurrency } from '@/utils/currency'
 

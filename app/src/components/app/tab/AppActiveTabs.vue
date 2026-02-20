@@ -1,15 +1,4 @@
 <script setup lang="ts">
-import { useTabsStore } from '@/stores/loaders/tabs'
-import { storeToRefs } from 'pinia'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { formatCurrency } from '@/utils/currency'
-import type { Tabs } from '@/services/supabase/types/tabTypes'
-
-import { useAuthStore } from '@/stores/auth'
-import { todaysTabsCountQuery } from '@/services/supabase/queries/tabQueries'
-
 const tabsStore = useTabsStore()
 const authStore = useAuthStore()
 const { openTabsList: openTabs, tab: currentTab } = storeToRefs(tabsStore)

@@ -14,8 +14,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed, h } from 'vue'
-
 const props = defineProps({
   name: {
     type: String,

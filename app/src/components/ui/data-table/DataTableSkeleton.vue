@@ -1,14 +1,4 @@
 <script setup lang="ts">
-import Skeleton from '@/components/ui/skeleton/Skeleton.vue'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-
 interface Props {
   rowCount?: number
   columnCount?: number

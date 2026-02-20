@@ -1,10 +1,5 @@
 <script setup lang="ts">
-import { useRoute } from 'vue-router'
-import { useTabsStore } from '@/stores/loaders/tabs'
-import { storeToRefs } from 'pinia'
 import { formatCurrency } from '@/utils/currency'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 
 const route = useRoute()
 const tabsStore = useTabsStore()

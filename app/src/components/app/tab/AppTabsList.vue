@@ -1,9 +1,4 @@
 <script setup lang="ts">
-import { useTabsStore } from '@/stores/loaders/tabs'
-import { storeToRefs } from 'pinia'
-import { Badge } from '@/components/ui/badge'
-import { computed } from 'vue'
-import { useRoute } from 'vue-router'
 import { formatCurrency } from '@/utils/currency'
 
 const route = useRoute()

@@ -1,22 +1,4 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-} from '@/components/ui/sheet'
-import { Button } from '@/components/ui/button'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { useTabsStore } from '@/stores/loaders/tabs'
-import { storeToRefs } from 'pinia'
 import { formatCurrency } from '@/utils/currency'
 
 const splitBillSheetStore = useSplitBillSheetStore()

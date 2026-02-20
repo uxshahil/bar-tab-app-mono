@@ -8,8 +8,6 @@
 </template>
 
 <script setup lang="ts">
-import { useAuthStore } from '@/stores/auth'
-import { storeToRefs } from 'pinia'
 import TabManager from './TabManager.vue'
 
 const authStore = useAuthStore()
