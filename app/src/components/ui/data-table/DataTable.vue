@@ -1,4 +1,17 @@
 <script setup lang="ts" generic="TData, TValue">
+import type {
+  ColumnDef,
+  PaginationState,
+  TableMeta,
+  TableOptions,
+  Updater,
+} from '@tanstack/vue-table'
+import {
+  FlexRender,
+  getCoreRowModel,
+  getPaginationRowModel,
+  useVueTable,
+} from '@tanstack/vue-table'
 const props = defineProps<{
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
@@ -48,7 +61,7 @@ const table = useVueTable({
     },
   },
   // Update Handler
-  onPaginationChange: (updaterOrValue) => {
+  onPaginationChange: (updaterOrValue: Updater<PaginationState>) => {
     // Resolve updater
     const old = pagination.value
     const next = typeof updaterOrValue === 'function' ? updaterOrValue(old) : updaterOrValue

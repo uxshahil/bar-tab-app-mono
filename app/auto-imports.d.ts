@@ -7,16 +7,34 @@
 export {}
 declare global {
   const EffectScope: typeof import('vue').EffectScope
+  const RouterLink: typeof import('vue-router').RouterLink
+  const VAT_RATE: typeof import('./src/utils/tabCalculations').VAT_RATE
   const acceptHMRUpdate: typeof import('pinia').acceptHMRUpdate
+  const addTabItemQuery: typeof import('./src/services/supabase/queries/tabQueries').addTabItemQuery
   const barApi: typeof import('./src/services/api/barApi').default
+  const barByIdQuery: typeof import('./src/services/supabase/queries/barQueries').barByIdQuery
+  const barQuery: typeof import('./src/services/supabase/queries/barQueries').barQuery
+  const barsQuery: typeof import('./src/services/supabase/queries/barQueries').barsQuery
+  const calculateTabTotals: typeof import('./src/utils/tabCalculations').calculateTabTotals
   const computed: typeof import('vue').computed
   const createApp: typeof import('vue').createApp
+  const createTabPaymentQuery: typeof import('./src/services/supabase/queries/tabQueries').createTabPaymentQuery
+  const createTabQuery: typeof import('./src/services/supabase/queries/tabQueries').createTabQuery
+  const createTabSplitQuery: typeof import('./src/services/supabase/queries/tabQueries').createTabSplitQuery
   const customRef: typeof import('vue').customRef
   const defineAsyncComponent: typeof import('vue').defineAsyncComponent
   const defineComponent: typeof import('vue').defineComponent
   const defineStore: typeof import('pinia').defineStore
+  const deleteDrinkQuery: typeof import('./src/services/supabase/queries/drinkQueries').deleteDrinkQuery
+  const deleteTabItemQuery: typeof import('./src/services/supabase/queries/tabQueries').deleteTabItemQuery
+  const deleteTabSplitQuery: typeof import('./src/services/supabase/queries/tabQueries').deleteTabSplitQuery
   const drinkApi: typeof import('./src/services/api/drinkApi').default
+  const drinkQuery: typeof import('./src/services/supabase/queries/drinkQueries').drinkQuery
+  const drinksByCategoryQuery: typeof import('./src/services/supabase/queries/drinkQueries').drinksByCategoryQuery
+  const drinksQuery: typeof import('./src/services/supabase/queries/drinkQueries').drinksQuery
   const effectScope: typeof import('vue').effectScope
+  const fetchDrinks: typeof import('./src/services/supabase/queries/drinkQueries').fetchDrinks
+  const formatCurrency: typeof import('./src/utils/currency').formatCurrency
   const getCurrentInstance: typeof import('vue').getCurrentInstance
   const getCurrentScope: typeof import('vue').getCurrentScope
   const getCurrentWatcher: typeof import('vue').getCurrentWatcher
@@ -29,6 +47,10 @@ declare global {
   const isShallow: typeof import('vue').isShallow
   const markRaw: typeof import('vue').markRaw
   const menuApi: typeof import('./src/services/api/menuApi').default
+  const menuKey: typeof import('./src/providers/injectionKeys').menuKey
+  const menuQuery: typeof import('./src/services/supabase/queries/menuQueries').menuQuery
+  const menusQuery: typeof import('./src/services/supabase/queries/menuQueries').menusQuery
+  const menusWithCategoriesQuery: typeof import('./src/services/supabase/queries/menuQueries').menusWithCategoriesQuery
   const nextTick: typeof import('vue').nextTick
   const onActivated: typeof import('vue').onActivated
   const onBeforeMount: typeof import('vue').onBeforeMount
@@ -46,7 +68,10 @@ declare global {
   const onUnmounted: typeof import('vue').onUnmounted
   const onUpdated: typeof import('vue').onUpdated
   const onWatcherCleanup: typeof import('vue').onWatcherCleanup
+  const openTabsQuery: typeof import('./src/services/supabase/queries/tabQueries').openTabsQuery
   const profileApi: typeof import('./src/services/api/profileApi').default
+  const profileQuery: typeof import('./src/services/supabase/queries/profileQueries').profileQuery
+  const profilesQuery: typeof import('./src/services/supabase/queries/profileQueries').profilesQuery
   const provide: typeof import('vue').provide
   const reactive: typeof import('vue').reactive
   const readonly: typeof import('vue').readonly
@@ -55,14 +80,28 @@ declare global {
   const shallowReactive: typeof import('vue').shallowReactive
   const shallowReadonly: typeof import('vue').shallowReadonly
   const shallowRef: typeof import('vue').shallowRef
+  const socket: typeof import('./src/services/socket/socket').socket
   const storeToRefs: typeof import('pinia').storeToRefs
+  const supabase: typeof import('./src/providers/supabaseClient').supabase
   const tabApi: typeof import('./src/services/api/tabApi').default
+  const tabItemsQuery: typeof import('./src/services/supabase/queries/tabQueries').tabItemsQuery
+  const tabPaymentsQuery: typeof import('./src/services/supabase/queries/tabQueries').tabPaymentsQuery
+  const tabQuery: typeof import('./src/services/supabase/queries/tabQueries').tabQuery
+  const tabSplitsQuery: typeof import('./src/services/supabase/queries/tabQueries').tabSplitsQuery
+  const tabTotalsQuery: typeof import('./src/services/supabase/queries/tabQueries').tabTotalsQuery
+  const tabsQuery: typeof import('./src/services/supabase/queries/tabQueries').tabsQuery
   const toRaw: typeof import('vue').toRaw
   const toRef: typeof import('vue').toRef
   const toRefs: typeof import('vue').toRefs
   const toValue: typeof import('vue').toValue
+  const todaysTabsCountQuery: typeof import('./src/services/supabase/queries/tabQueries').todaysTabsCountQuery
   const triggerRef: typeof import('vue').triggerRef
   const unref: typeof import('vue').unref
+  const updateDrinkQuery: typeof import('./src/services/supabase/queries/drinkQueries').updateDrinkQuery
+  const updateTabItemQuery: typeof import('./src/services/supabase/queries/tabQueries').updateTabItemQuery
+  const updateTabQuery: typeof import('./src/services/supabase/queries/tabQueries').updateTabQuery
+  const updateTabSplitQuery: typeof import('./src/services/supabase/queries/tabQueries').updateTabSplitQuery
+  const updateUserQuery: typeof import('./src/services/supabase/queries/profileQueries').updateUserQuery
   const useAddToTabStore: typeof import('./src/stores/ui/addToTab').useAddToTabStore
   const useAttrs: typeof import('vue').useAttrs
   const useAuthStore: typeof import('./src/stores/auth').useAuthStore
@@ -73,6 +112,7 @@ declare global {
   const useDrinksStore: typeof import('./src/stores/loaders/drinks').useDrinksStore
   const useErrorStore: typeof import('./src/stores/error').useErrorStore
   const useId: typeof import('vue').useId
+  const useMemoize: typeof import('@vueuse/core').useMemoize
   const useMenusStore: typeof import('./src/stores/loaders/menus').useMenusStore
   const useMeta: typeof import('vue-meta').useMeta
   const useModel: typeof import('vue').useModel
@@ -88,6 +128,7 @@ declare global {
   const useTemplateRef: typeof import('vue').useTemplateRef
   const useUserSheetStore: typeof import('./src/stores/ui/userSheet').useUserSheetStore
   const useUsersStore: typeof import('./src/stores/loaders/users').useUsersStore
+  const userTabsQuery: typeof import('./src/services/supabase/queries/tabQueries').userTabsQuery
   const watch: typeof import('vue').watch
   const watchEffect: typeof import('vue').watchEffect
   const watchPostEffect: typeof import('vue').watchPostEffect
@@ -107,4 +148,10 @@ declare global {
   // @ts-ignore
   export type { CreateNewUser, EditUser, DeleteUser } from './src/interfaces/UserInterfaces'
   import('./src/interfaces/UserInterfaces')
+  // @ts-ignore
+  export type { TabTotals } from './src/utils/tabCalculations'
+  import('./src/utils/tabCalculations')
+  // @ts-ignore
+  export type { MenuInjectionOptions } from './src/providers/injectionKeys'
+  import('./src/providers/injectionKeys')
 }

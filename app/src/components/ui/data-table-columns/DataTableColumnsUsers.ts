@@ -1,7 +1,10 @@
+import DropdownAction from '@/components/ui/data-table-drop-down/DataTableDropDown.vue'
 import type { DeleteUser } from '@/interfaces/UserInterfaces'
 import profileApi from '@/services/api/profileApi'
 import type { Profiles } from '@/services/supabase/types/profileTypes'
 import type { ColumnDef } from '@tanstack/vue-table'
+import { h } from 'vue'
+import { RouterLink } from 'vue-router'
 
 const { deleteProfile } = profileApi
 

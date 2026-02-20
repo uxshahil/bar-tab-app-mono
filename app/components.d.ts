@@ -146,7 +146,6 @@ declare module 'vue' {
     TableRow: typeof import('./src/components/ui/table/TableRow.vue')['default']
     TabManager: typeof import('./src/components/app/tab/TabManager.vue')['default']
     TabManagerWrapper: typeof import('./src/components/app/tab/TabManagerWrapper.vue')['default']
-    TabSheet: typeof import('./src/components/tab/TabSheet.vue')['default']
     TabSplitForm: typeof import('./src/components/app/tab/TabSplitForm.vue')['default']
     Textarea: typeof import('./src/components/ui/textarea/Textarea.vue')['default']
     TopNavbar: typeof import('./src/components/layout/TopNavbar.vue')['default']

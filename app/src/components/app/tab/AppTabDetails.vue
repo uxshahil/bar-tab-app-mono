@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { Profile } from '@/services/supabase/types/profileTypes'
+import type { TabItem } from '@/services/supabase/types/tabTypes'
 const tabsStore = useTabsStore()
 const { tab, tabItems, tabSplits, tabPayments } = storeToRefs(tabsStore)
 

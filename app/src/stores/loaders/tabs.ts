@@ -1,3 +1,16 @@
+import type {
+  Tab,
+  TabItem,
+  TabItems,
+  TabPaymentInsert,
+  TabPayments,
+  Tabs,
+  TabSplit,
+  TabSplitInsert,
+  TabSplits,
+} from '@/services/supabase/types/tabTypes'
+import type { PostgrestSingleResponse } from '@supabase/supabase-js'
+
 export const useTabsStore = defineStore('tabs-store', () => {
   const authStore = useAuthStore()
 

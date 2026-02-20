@@ -30,16 +30,6 @@ export default defineConfigWithVueTs(
         {
           paths: [
             {
-              name: 'vue',
-              message: 'Using unplugin-auto-import: Please remove this explicit import.',
-              allowTypeImports: true
-            },
-            {
-              name: 'vue-router',
-              message: 'Using unplugin-auto-import: Please remove this explicit import.',
-              allowTypeImports: true
-            },
-            {
               name: 'pinia',
               importNames: ['defineStore', 'storeToRefs', 'acceptHMRUpdate'],
               message: 'This Pinia function is auto-imported. Please remove the explicit import.',
@@ -53,11 +43,6 @@ export default defineConfigWithVueTs(
             }
           ],
           patterns: [
-            {
-              group: ['@/components/*'],
-              message: 'Components are globally auto-imported by unplugin-vue-components. Please remove explicit imports.',
-              allowTypeImports: true
-            },
             {
               group: ['@/composables/*'],
               message: 'Composables are globally auto-imported by unplugin-auto-import. Please remove explicit imports.',

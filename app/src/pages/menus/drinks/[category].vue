@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { columns } from '@/components/ui/data-table-columns/DataTableColumnsDrinks'
+import type { Drink } from '@/services/supabase/types/drinkTypes'
 const route = useRoute()
 const drinksStore = useDrinksStore()
 const addToTabStore = useAddToTabStore()

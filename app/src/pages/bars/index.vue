@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { columns } from '@/components/ui/data-table-columns/DataTableColumnsBars'
+
 const barsStore = useBarsStore()
 const { bars } = storeToRefs(barsStore)
 

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { Tabs } from '@/services/supabase/types/tabTypes'
+import { formatCurrency } from '@/utils/currency'
 const tabsStore = useTabsStore()
 const authStore = useAuthStore()
 const { openTabsList: openTabs, tab: currentTab } = storeToRefs(tabsStore)

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { columns } from '@/components/ui/data-table-columns/DataTableColumnsMenus'
+
 const menusStore = useMenusStore()
 const { menus } = storeToRefs(menusStore)
 

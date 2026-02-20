@@ -164,6 +164,7 @@
 </template>
 
 <script setup lang="ts">
+import type { Tabs } from '@/services/supabase/types/tabTypes'
 import { toTypedSchema } from '@vee-validate/zod'
 import { useForm } from 'vee-validate'
 import * as z from 'zod'

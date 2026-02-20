@@ -1,3 +1,5 @@
+import type { Bar, Bars } from '@/services/supabase/types/barTypes'
+
 export const useBarsStore = defineStore('bars-store', () => {
   const bars = ref<Bars | null>(null)
   const bar = ref<Bar | null>(null)

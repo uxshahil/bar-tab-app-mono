@@ -1,5 +1,7 @@
 import type { BarMenus, Bars } from '@/services/supabase/types/barTypes'
 import type { ColumnDef } from '@tanstack/vue-table'
+import { h } from 'vue'
+import { RouterLink } from 'vue-router'
 
 export const columns: ColumnDef<Bars[0]>[] = [
   {

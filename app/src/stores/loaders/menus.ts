@@ -1,3 +1,5 @@
+import type { Menu, MenusWithCategories } from '@/services/supabase/types/menuTypes'
+
 export const useMenusStore = defineStore('menus-store', () => {
   const menus = ref<MenusWithCategories | null>(null)
   const menu = ref<Menu | null>(null)
@@ -10,7 +12,7 @@ export const useMenusStore = defineStore('menus-store', () => {
       useErrorStore().setError({ error, customCode: status })
       return
     }
-    menus.value = data
+    menus.value = data as MenusWithCategories
   }
 
   const getMenu = async (slug: string) => {

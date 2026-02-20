@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { columns } from '@/components/ui/data-table-columns/DataTableColumnsUsers'
+import type { Profile } from '@/services/supabase/types/profileTypes'
+
 const usersStore = useUsersStore()
 const { users } = storeToRefs(usersStore)
 const route = useRoute()

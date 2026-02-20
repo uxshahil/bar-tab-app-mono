@@ -32,10 +32,13 @@ export default defineConfig({
         // presets
         'vue',
         VueRouterAutoImports,
+        { 'vue-router': ['RouterLink'] },
         { pinia: ['defineStore', 'storeToRefs', 'acceptHMRUpdate'] },
         {
           'vue-meta': ['useMeta']
-        }
+        },
+        { '@vueuse/core': ['useMemoize'] },
+        { '@tanstack/vue-table': ['useVueTable', 'getCoreRowModel', 'getPaginationRowModel', 'FlexRender'] }
       ],
       // Filepath to generate corresponding .d.ts file.
       // Defaults to './auto-imports.d.ts' when `typescript` is installed locally.
@@ -50,8 +53,19 @@ export default defineConfig({
         './src/stores/**',
         './src/composables/**',
         './src/services/api/**',
-        './src/interfaces/**'
-      ]
+        './src/interfaces/**',
+        './src/services/supabase/queries/**',
+        './src/utils/**',
+        './src/providers/**',
+        './src/services/socket/**'
+      ],
+
+      // Enable auto import by filename for default module exports under directories
+      defaultExportByFilename: false,
+
+      // Auto import for module exports under directories
+      // by default it only scan one level of modules under the directory
+      vueTemplate: true,
     }),
     vue({
       template: {

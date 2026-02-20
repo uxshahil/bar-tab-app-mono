@@ -1,5 +1,7 @@
 import type { MenusWithCategories } from '@/services/supabase/types/menuTypes'
 import type { ColumnDef } from '@tanstack/vue-table'
+import { h } from 'vue'
+import { RouterLink } from 'vue-router'
 
 export const columns: ColumnDef<MenusWithCategories[0]>[] = [
   {

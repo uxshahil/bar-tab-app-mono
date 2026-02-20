@@ -1,4 +1,10 @@
+import Button from '@/components/ui/button/Button.vue'
+import EditablePriceCell from '@/components/ui/data-table-cells/EditablePriceCell.vue'
+import DropdownAction from '@/components/ui/data-table-drop-down/DataTableDropDown.vue'
+import type { Drinks } from '@/services/supabase/types/drinkTypes'
 import type { ColumnDef } from '@tanstack/vue-table'
+import { h } from 'vue'
+import { RouterLink } from 'vue-router'
 
 const { updateDrink, deleteDrink } = useDrinksStore()
 
