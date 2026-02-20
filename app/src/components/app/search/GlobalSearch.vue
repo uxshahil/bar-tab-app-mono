@@ -49,7 +49,7 @@ watch(
         class="absolute top-[50%] translate-y-[-50%] left-2.5 text-muted-foreground z-10"
         icon="lucide:search"
       ></iconify-icon>
-      <Input v-model="searchQuery" class="pl-9" placeholder="Filter tabs or drinks..." />
+      <Input v-model="searchQuery" class="pl-9" placeholder="Search drinks or users..." />
       <button
         v-if="searchQuery"
         @click="searchQuery = ''"

@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import { columns } from '@/components/ui/data-table-columns/DataTableColumnsDrinks'
+import { columns as drinkColumns } from '@/components/ui/data-table-columns/DataTableColumnsDrinks'
+import { columns as userColumns } from '@/components/ui/data-table-columns/DataTableColumnsUsers'
 import { useDrinksStore } from '@/stores/loaders/drinks'
+import { useUsersStore } from '@/stores/loaders/users'
 import { storeToRefs } from 'pinia'
 import { useRoute } from 'vue-router'
 import type { Drink } from '@/services/supabase/types/drinkTypes'
 import AppAddToTab from '@/components/app/tab/AppAddToTab.vue'
 import { useAuthStore } from '@/stores/auth'
-import { onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { usePageStore } from '@/stores/page'
 
 usePageStore().pageData.title = 'Dashboard'
@@ -14,14 +16,23 @@ usePageStore().pageData.title = 'Dashboard'
 const route = useRoute()
 const authStore = useAuthStore()
 const drinksStore = useDrinksStore()
+const usersStore = useUsersStore()
 const { drinks } = storeToRefs(drinksStore)
+const { users } = storeToRefs(usersStore)
 
 const isAddToTabOpen = ref(false)
 const selectedDrink = ref<Drink | null>(null)
+const isLoading = ref(false)
 
-const getDrinks = async (search?: string) => {
-  await drinksStore.getDrinks(search)
+const search = async (query?: string) => {
+  isLoading.value = true
+  await Promise.all([drinksStore.getDrinks(query), usersStore.getUsers(query)])
+  isLoading.value = false
 }
+
+const showUsersGrid = computed(
+  () => !!route.query.search && !drinks.value?.length && !!users.value?.length,
+)
 
 const onAddToTab = async (drink: Drink) => {
   // Always open sheet to allow quantity/instruction selection
@@ -31,27 +42,37 @@ const onAddToTab = async (drink: Drink) => {
 
 // Load initially using current query param
 onMounted(() => {
-  getDrinks(route.query.search as string | undefined)
+  search(route.query.search as string | undefined)
 })
 
 // React to search query changes (e.g. from navbar)
 watch(
   () => route.query.search,
   (newSearch) => {
-    getDrinks(newSearch as string | undefined)
+    search(newSearch as string | undefined)
   },
 )
 </script>
 
 <template>
   <div class="h-full flex flex-col">
-    <!-- Main Content - Drinks Table -->
+    <!-- Main Content - Drinks or Users Table -->
     <div class="flex-1 overflow-hidden border rounded-lg relative">
-      <div v-if="drinks" class="h-full overflow-auto bg-red">
+      <div class="h-full overflow-auto">
         <DataTable
-          :data="drinks"
-          :columns="columns"
-          :loading="!drinks"
+          v-if="showUsersGrid"
+          :data="users ?? []"
+          :columns="userColumns"
+          :loading="isLoading"
+          class="w-full"
+          :empty-text="'No users found'"
+          pagination-key="dashboard-table"
+        />
+        <DataTable
+          v-else
+          :data="drinks ?? []"
+          :columns="drinkColumns"
+          :loading="isLoading"
           class="w-full"
           :empty-text="'No drinks found'"
           pagination-key="dashboard-table"
