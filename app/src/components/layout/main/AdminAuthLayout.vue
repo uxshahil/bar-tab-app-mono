@@ -4,24 +4,26 @@ import TopNavbar from '@/components/layout/TopNavbar.vue'
 
 const { pageData } = storeToRefs(usePageStore())
 
-const taskSheetOpen = ref({ user: false, tab: false, drink: false })
-
 const menuOpen = ref(false)
 const toggleMenu = () => (menuOpen.value = !menuOpen.value)
 
 const rightSidebarOpen = ref(true)
 const toggleRightSidebar = () => (rightSidebarOpen.value = !rightSidebarOpen.value)
 
+const userSheetStore = useUserSheetStore()
+const drinkSheetStore = useDrinkSheetStore()
+const newTabSheetStore = useNewTabSheetStore()
+
 const userClicked = () => {
-  taskSheetOpen.value = { user: true, tab: false, drink: false }
+  userSheetStore.openSheet()
 }
 
 const tabClicked = () => {
-  taskSheetOpen.value = { user: false, tab: true, drink: false }
+  newTabSheetStore.openSheet()
 }
 
 const drinkClicked = () => {
-  taskSheetOpen.value = { user: false, tab: false, drink: true }
+  drinkSheetStore.openSheet()
 }
 
 provide(menuKey, {
@@ -35,11 +37,11 @@ provide(menuKey, {
 <template>
   <div>
     <Sidebar @userClicked="userClicked" @tabClicked="tabClicked" @drinkClicked="drinkClicked" />
-    <AppUserSheet v-model:open="taskSheetOpen.user" />
-    <AppNewTab v-model="taskSheetOpen.tab" />
-    <AppDrinkSheet v-model:open="taskSheetOpen.drink" />
-
-    <!-- Global Tab Sheet -->
+    <AppUserSheet />
+    <AppNewTab />
+    <AppDrinkSheet />
+    <AppAddToTab />
+    <AppTabDetailsSheet />
 
     <div
       class="flex flex-col transition-[margin]"

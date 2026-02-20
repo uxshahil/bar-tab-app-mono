@@ -2,7 +2,6 @@
 import { columns } from '@/components/ui/data-table-columns/DataTableColumnsUsers'
 import { useUsersStore } from '@/stores/loaders/users'
 import { storeToRefs } from 'pinia'
-import AppUserSheet from '@/components/app/users/AppUserSheet.vue'
 import AppResourcePage from '@/components/common/AppResourcePage.vue'
 import type { Profile } from '@/services/supabase/types/profileTypes'
 
@@ -24,16 +23,8 @@ watch(
   },
 )
 
-const isUserSheetOpen = ref(false)
-const editingUser = ref<Profile | null>(null)
-
 const onEditUser = (user: Profile) => {
-  editingUser.value = user
-  isUserSheetOpen.value = true
-}
-
-const onRefresh = async () => {
-  await usersStore.getUsers(route.query.search as string)
+  useUserSheetStore().openSheet(user)
 }
 </script>
 
@@ -49,14 +40,5 @@ const onRefresh = async () => {
         onEditUser,
       },
     }"
-  >
-    <template #sheet>
-      <AppUserSheet
-        v-model:open="isUserSheetOpen"
-        :user-to-edit="editingUser"
-        @close="editingUser = null"
-        @refresh="onRefresh"
-      />
-    </template>
-  </AppResourcePage>
+  />
 </template>

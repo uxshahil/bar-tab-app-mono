@@ -19,11 +19,9 @@ import { useTabsStore } from '@/stores/loaders/tabs'
 import { storeToRefs } from 'pinia'
 import { formatCurrency } from '@/utils/currency'
 
-const props = defineProps<{
-  tabId: string | number
-}>()
-
-const isOpen = defineModel<boolean>('open')
+const splitBillSheetStore = useSplitBillSheetStore()
+const { isOpen, tabId } = storeToRefs(splitBillSheetStore)
+const { closeSheet } = splitBillSheetStore
 
 const createNewSplit = async () => {
   loading.value = true
@@ -32,7 +30,7 @@ const createNewSplit = async () => {
   const nextSplitNumber = maxSplitNumber + 1
 
   await tabsStore.createTabSplit({
-    tab_id: Number(props.tabId),
+    tab_id: Number(tabId.value),
     split_number: nextSplitNumber,
     items_included: [],
     subtotal: 0,
@@ -45,7 +43,7 @@ const createNewSplit = async () => {
   })
 
   // Refresh splits
-  await tabsStore.getTabSplits(props.tabId.toString())
+  await tabsStore.getTabSplits(tabId.value!.toString())
   loading.value = false
 }
 
@@ -67,7 +65,7 @@ const initializeSplits = async () => {
   const nextSplitNumber = maxSplitNumber + 1
 
   await tabsStore.createTabSplit({
-    tab_id: Number(props.tabId),
+    tab_id: Number(tabId.value),
     split_number: nextSplitNumber,
     items_included: [],
     subtotal: 0,
@@ -87,7 +85,7 @@ const deleteSplit = async (splitId: number) => {
     return
 
   loading.value = true
-  await tabsStore.deleteTabSplit(splitId, props.tabId)
+  await tabsStore.deleteTabSplit(splitId, tabId.value!)
   loading.value = false
 }
 
@@ -136,16 +134,16 @@ const getSplitForItem = (itemId: number) => {
 }
 
 watch(isOpen, async (newVal) => {
-  if (newVal) {
-    await tabsStore.getTabItems(props.tabId.toString())
-    await tabsStore.getTabSplits(props.tabId.toString())
+  if (newVal && tabId.value) {
+    await tabsStore.getTabItems(tabId.value.toString())
+    await tabsStore.getTabSplits(tabId.value.toString())
     await initializeSplits()
   }
 })
 </script>
 
 <template>
-  <Sheet v-model:open="isOpen">
+  <Sheet :open="isOpen" @update:open="(v) => !v && closeSheet()">
     <SheetContent class="w-[400px] sm:w-[600px] overflow-y-auto max-h-screen px-4">
       <SheetHeader>
         <SheetTitle>Split Bill</SheetTitle>

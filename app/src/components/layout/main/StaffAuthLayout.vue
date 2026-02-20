@@ -4,24 +4,25 @@ import AppRightSidebar from '@/components/layout/AppRightSidebar.vue'
 
 const { pageData } = storeToRefs(usePageStore())
 
-const taskSheetOpen = ref({ user: false, tab: false, drink: false })
-
 const menuOpen = ref(false)
 const toggleMenu = () => (menuOpen.value = !menuOpen.value)
 
 const rightSidebarOpen = ref(true)
 const toggleRightSidebar = () => (rightSidebarOpen.value = !rightSidebarOpen.value)
 
+const userSheetStore = useUserSheetStore()
+const drinkSheetStore = useDrinkSheetStore()
+
 const userClicked = () => {
-  taskSheetOpen.value = { user: true, tab: false, drink: false }
+  userSheetStore.openSheet()
 }
 
 const tabClicked = () => {
-  taskSheetOpen.value = { user: false, tab: true, drink: false }
+  useNewTabSheetStore().openSheet()
 }
 
 const drinkClicked = () => {
-  taskSheetOpen.value = { user: false, tab: false, drink: true }
+  drinkSheetStore.openSheet()
 }
 
 provide(menuKey, {
@@ -35,8 +36,10 @@ provide(menuKey, {
 <template>
   <div>
     <Sidebar @userClicked="userClicked" @tabClicked="tabClicked" @drinkClicked="drinkClicked" />
-    <AppUserSheet v-model:open="taskSheetOpen.user" />
-    <AppDrinkSheet v-model:open="taskSheetOpen.drink" />
+    <AppUserSheet />
+    <AppDrinkSheet />
+    <AppAddToTab />
+    <AppTabDetailsSheet />
 
     <div
       class="flex flex-col transition-[margin]"

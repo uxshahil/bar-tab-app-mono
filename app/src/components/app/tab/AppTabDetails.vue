@@ -212,7 +212,7 @@ const getTabDuration = (dateString: string) => {
 
 import AppSplitBillSheet from '@/components/app/tab/AppSplitBillSheet.vue'
 
-const isSplitBillOpen = ref(false)
+const splitBillSheetStore = useSplitBillSheetStore()
 
 // Split Logic
 const selectedSplitId = ref<number | null>(null)
@@ -354,7 +354,7 @@ const receiptTab = computed(() => {
               <iconify-icon icon="lucide:mail" class="mr-2 h-4 w-4" />
               Email Receipt
             </Button>
-            <Button variant="outline" size="sm" @click="isSplitBillOpen = true">
+            <Button variant="outline" size="sm" @click="splitBillSheetStore.openSheet(tab.id)">
               <iconify-icon icon="lucide:split" class="mr-2 h-4 w-4" />
               Split Bill
             </Button>
@@ -372,7 +372,7 @@ const receiptTab = computed(() => {
         </div>
       </div>
 
-      <AppSplitBillSheet v-model:open="isSplitBillOpen" :tab-id="tab.id" />
+      <AppSplitBillSheet />
 
       <!-- Staff Indicator -->
       <div v-if="staffProfile" class="mt-3 flex items-center gap-2 text-sm bg-muted/50 p-2 rounded">
@@ -459,7 +459,12 @@ const receiptTab = computed(() => {
       >
         S{{ split.split_number }}
       </Button>
-      <Button variant="ghost" size="icon" class="h-7 w-7 shrink-0" @click="isSplitBillOpen = true">
+      <Button
+        variant="ghost"
+        size="icon"
+        class="h-7 w-7 shrink-0"
+        @click="splitBillSheetStore.openSheet(tab.id)"
+      >
         <iconify-icon icon="lucide:plus" class="text-base" />
       </Button>
     </div>
@@ -568,7 +573,7 @@ const receiptTab = computed(() => {
               class="text-center py-8 text-muted-foreground"
             >
               <p>No items assigned to this split</p>
-              <Button variant="link" size="sm" @click="isSplitBillOpen = true"
+              <Button variant="link" size="sm" @click="splitBillSheetStore.openSheet(tab.id)"
                 >Manage Splits</Button
               >
             </div>

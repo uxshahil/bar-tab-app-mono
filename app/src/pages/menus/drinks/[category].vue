@@ -3,7 +3,6 @@ import { columns } from '@/components/ui/data-table-columns/DataTableColumnsDrin
 import { useDrinksStore } from '@/stores/loaders/drinks'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import AppDrinkSheet from '@/components/app/drinks/AppDrinkSheet.vue'
 import AppResourcePage from '@/components/common/AppResourcePage.vue'
 import { useAddToTabStore } from '@/stores/ui/addToTab'
 import { useAuthStore } from '@/stores/auth'
@@ -21,12 +20,8 @@ const categoryTitle = computed(() => {
   return slug.charAt(0).toUpperCase() + slug.slice(1) + ' Drinks'
 })
 
-const isDrinkSheetOpen = ref(false)
-const editingDrinkId = ref<number | null>(null)
-
 const onEditDrink = (drink: Drink) => {
-  editingDrinkId.value = drink.id
-  isDrinkSheetOpen.value = true
+  useDrinkSheetStore().openSheet(drink.id)
 }
 
 const onAddToTab = (drink: Drink) => {
@@ -60,13 +55,5 @@ watch(
         userRole: authStore.profile?.user_role,
       },
     }"
-  >
-    <template #sheet>
-      <AppDrinkSheet
-        v-model:open="isDrinkSheetOpen"
-        :drink-id="editingDrinkId"
-        @close="editingDrinkId = null"
-      />
-    </template>
-  </AppResourcePage>
+  />
 </template>

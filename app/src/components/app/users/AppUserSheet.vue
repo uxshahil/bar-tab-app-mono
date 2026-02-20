@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, watch } from 'vue'
 import type { CreateNewUser, EditUser } from '@/interfaces/UserInterfaces'
-import type { Profile } from '@/services/supabase/types/profileTypes'
 import profileApi from '@/services/api/profileApi'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
@@ -19,14 +18,11 @@ import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
 
-const props = defineProps<{
-  userToEdit?: Profile | null
-}>()
+const userSheetStore = useUserSheetStore()
+const { isOpen, userToEdit } = storeToRefs(userSheetStore)
+const { closeSheet } = userSheetStore
 
-const sheetOpen = defineModel<boolean>('open')
-const emit = defineEmits(['close', 'refresh'])
-
-const isEditing = computed(() => !!props.userToEdit)
+const isEditing = computed(() => !!userToEdit.value)
 
 const selectOptions = {
   roles: [
@@ -62,7 +58,7 @@ const form = useForm({
 
 // Watch for userToEdit changes to populate form
 watch(
-  () => props.userToEdit,
+  userToEdit,
   (newUser) => {
     if (newUser) {
       // Split full name if possible
@@ -95,7 +91,7 @@ const onSubmit = form.handleSubmit(async (values) => {
   }
 
   try {
-    if (isEditing.value && props.userToEdit) {
+    if (isEditing.value && userToEdit.value) {
       // Only include password if provided
       if (!userData.password) delete userData.password
 
@@ -104,18 +100,17 @@ const onSubmit = form.handleSubmit(async (values) => {
       const { firstName: _firstName, lastName: _lastName, ...cleanData } = userData
 
       const editPayload: EditUser = {
-        id: props.userToEdit.id,
+        id: userToEdit.value.id,
         data: cleanData,
       }
       await profileApi.editProfile(editPayload)
-      emit('refresh')
+      await useUsersStore().getUsers()
     } else {
       // Ensure password is present for creation (it is required by schema, but types might need assertion)
       await profileApi.createProfile(userData as CreateNewUser)
-      emit('refresh')
+      await useUsersStore().getUsers()
     }
-    sheetOpen.value = false
-    emit('close')
+    closeSheet()
   } catch (error) {
     console.error('Error saving user:', error)
   }
@@ -123,7 +118,7 @@ const onSubmit = form.handleSubmit(async (values) => {
 </script>
 
 <template>
-  <Sheet v-model:open="sheetOpen">
+  <Sheet :open="isOpen" @update:open="(v) => !v && closeSheet()">
     <SheetContent class="overflow-y-auto max-h-screen px-4">
       <SheetHeader>
         <SheetTitle>{{ isEditing ? 'Edit User' : 'Create New User' }}</SheetTitle>

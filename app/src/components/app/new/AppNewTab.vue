@@ -12,7 +12,10 @@ import * as z from 'zod'
 import { todaysTabsCountQuery } from '@/services/supabase/queries/tabQueries'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 
-const sheetOpen = defineModel<boolean>()
+const newTabSheetStore = useNewTabSheetStore()
+const { isOpen } = storeToRefs(newTabSheetStore)
+const { closeSheet } = newTabSheetStore
+
 const tabsStore = useTabsStore()
 const authStore = useAuthStore()
 const { profile } = storeToRefs(authStore)
@@ -44,8 +47,8 @@ const generateTabNumber = async () => {
   return `TAB-${month}${day}-${sequence}`
 }
 
-watch(sheetOpen, async (isOpen) => {
-  if (isOpen) {
+watch(isOpen, async (isOpenVal) => {
+  if (isOpenVal) {
     const tabNum = await generateTabNumber()
     initialTabNumber.value = tabNum
     form.setValues({
@@ -73,13 +76,13 @@ const onSubmit = form.handleSubmit(async (values) => {
   })
 
   if (tabId) {
-    sheetOpen.value = false
+    closeSheet()
   }
 })
 </script>
 
 <template>
-  <Sheet v-model:open="sheetOpen">
+  <Sheet :open="isOpen" @update:open="(v) => !v && closeSheet()">
     <SheetContent class="overflow-y-auto max-h-screen px-4">
       <SheetHeader>
         <SheetTitle>Create New Tab</SheetTitle>

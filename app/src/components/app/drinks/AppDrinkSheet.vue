@@ -26,12 +26,9 @@ import * as z from 'zod'
 import drinkApi from '@/services/api/drinkApi'
 import { useDrinksStore } from '@/stores/loaders/drinks'
 
-const props = defineProps<{
-  drinkId?: number | null
-}>()
-
-const sheetOpen = defineModel<boolean>('open')
-const emit = defineEmits(['close'])
+const drinkSheetStore = useDrinkSheetStore()
+const { isOpen, drinkId } = storeToRefs(drinkSheetStore)
+const { closeSheet } = drinkSheetStore
 
 const store = useDrinksStore()
 const { getDrinks, getDrink } = store
@@ -39,10 +36,10 @@ const { drinks, drink } = storeToRefs(store)
 
 // Reactively find the drink in the store to ensure we have the latest version
 const drinkToEdit = computed(() => {
-  if (!props.drinkId) return null
-  const fromList = drinks.value?.find((d) => String(d.id) === String(props.drinkId))
+  if (!drinkId.value) return null
+  const fromList = drinks.value?.find((d) => String(d.id) === String(drinkId.value))
   if (fromList) return fromList
-  if (drink.value && String(drink.value.id) === String(props.drinkId)) {
+  if (drink.value && String(drink.value.id) === String(drinkId.value)) {
     return drink.value
   }
   return null
@@ -50,7 +47,7 @@ const drinkToEdit = computed(() => {
 
 // Fetch drink if we don't have it
 watch(
-  () => props.drinkId,
+  () => drinkId.value,
   async (newId) => {
     if (newId && !drinkToEdit.value) {
       await getDrink(String(newId))
@@ -61,7 +58,7 @@ watch(
   { immediate: true },
 )
 
-const isEditing = computed(() => !!props.drinkId)
+const isEditing = computed(() => !!drinkId.value)
 
 const selectOptions = {
   alcoholic: [
@@ -146,20 +143,19 @@ const onSubmit = form.handleSubmit(async (values) => {
   }
 
   try {
-    if (isEditing.value && props.drinkId) {
+    if (isEditing.value && drinkId.value) {
       const editPayload: EditDrink = {
-        id: props.drinkId,
+        id: drinkId.value,
         data: drinkData,
       }
       await drinkApi.editDrink(editPayload)
       await getDrinks()
-      await getDrinks() // Copied from original, seems redundant but maybe needed for race conditions?
+      await getDrinks()
     } else {
       await drinkApi.createDrink(drinkData as unknown as CreateNewDrink)
       await getDrinks()
     }
-    sheetOpen.value = false
-    emit('close')
+    closeSheet()
   } catch (error) {
     console.error('Error saving drink:', error)
   }
@@ -167,7 +163,7 @@ const onSubmit = form.handleSubmit(async (values) => {
 </script>
 
 <template>
-  <Sheet v-model:open="sheetOpen">
+  <Sheet :open="isOpen" @update:open="(v) => !v && closeSheet()">
     <SheetContent class="overflow-y-auto max-h-screen px-4">
       <SheetHeader>
         <SheetTitle>{{ isEditing ? 'Edit Drink' : 'Create New Drink' }}</SheetTitle>

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useTabsStore } from '@/stores/loaders/tabs'
 import { useAuthStore } from '@/stores/auth'
-import { useTabSheetStore } from '@/stores/tabSheet'
 import { storeToRefs } from 'pinia'
 import {
   Sheet,
@@ -17,14 +16,10 @@ import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/comp
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
-import type { Drink } from '@/services/supabase/types/drinkTypes'
 import type { Tabs } from '@/services/supabase/types/tabTypes'
 
-const props = defineProps<{
-  drink: Drink | null
-}>()
-
-const isOpen = defineModel<boolean>('open')
+const addToTabStore = useAddToTabStore()
+const { isOpen, drink } = storeToRefs(addToTabStore)
 
 const tabsStore = useTabsStore()
 const authStore = useAuthStore()
@@ -134,34 +129,26 @@ const onNewTabSubmit = form.handleSubmit(async (values) => {
     await tabsStore.getTab(tabId.toString())
     await tabsStore.getTabSplits(tabId.toString())
     mode.value = 'configure-item'
-
-    // Set as selected in global sheet
-    const tabSheetStore = useTabSheetStore()
-    tabSheetStore.selectedTabId = tabId
   }
 })
 
 // Add Item Logic
 const addToTab = async () => {
-  if (!currentTab.value || !props.drink) return
+  if (!currentTab.value || !drink.value) return
 
   await tabsStore.addDrinkToTab({
     tabId: currentTab.value.id,
     drink: {
-      id: props.drink.id,
-      price: props.drink.price || 0,
-      name: props.drink.name,
+      id: drink.value.id,
+      price: drink.value.price || 0,
+      name: drink.value.name,
     },
     quantity: quantity.value,
     specialInstructions: specialInstructions.value,
     splitId: selectedSplitId.value,
   })
 
-  // Set the selected tab in the global TabSheet so it's ready when opened
-  const tabSheetStore = useTabSheetStore()
-  tabSheetStore.selectedTabId = currentTab.value.id
-
-  isOpen.value = false
+  addToTabStore.close()
 }
 
 const splitOptions = computed(() => {
@@ -174,7 +161,7 @@ const splitOptions = computed(() => {
 </script>
 
 <template>
-  <Sheet v-model:open="isOpen">
+  <Sheet :open="isOpen" @update:open="(v) => !v && addToTabStore.close()">
     <SheetContent class="overflow-y-auto max-h-screen px-4">
       <SheetHeader>
         <SheetTitle>Add to Tab</SheetTitle>
