@@ -5,7 +5,7 @@ import axios from 'axios';
 import cors from 'cors'; // Consider adding CORS if needed
 
 import { Server } from 'socket.io';
-import { createServer } from 'http';
+import { createServer } from 'node:http';
 
 import instructionResolver from './utils/instructionResolver.js';
 
@@ -21,14 +21,16 @@ const io = new Server(httpServer, {
 });
 
 app.use(express.json());
-app.use(cors({
+app.use(
+  cors({
     exposedHeaders: ['X-Cache-Revalidating']
-}));
+  })
+);
 
 const supabaseAdmin = createClient(
-    process.env.SUPABASE_URL ?? '',
-    process.env.SUPABASE_SERVICE_ROLE_KEY ?? ''
-  );
+  process.env.SUPABASE_URL ?? '',
+  process.env.SUPABASE_SERVICE_ROLE_KEY ?? ''
+);
 
 // Add logging middleware
 app.use((req, res, next) => {
@@ -49,7 +51,7 @@ app.post('/create-user', async (req, res) => {
   try {
     const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
       email,
-      password, 
+      password,
       email_confirm: true,
       user_metadata: {
         first_name: firstName,
@@ -66,19 +68,17 @@ app.post('/create-user', async (req, res) => {
 
     if (authData?.user?.id) {
       console.log(`[CREATE USER] User created with ID: ${authData.user.id}`);
-      const { error: profileError } = await supabaseAdmin
-        .from('profile')
-        .insert({
-          id: authData.user.id,
-          full_name: `${firstName} ${lastName}`,
-          username,
-          bio: 'The main testing account',
-          avatar_url: `https://i.pravatar.cc/150?u=${authData.user.id}`,
-          email,
-          password, // WARNING: Don't store plain passwords
-          user_role,
-          pin
-        });
+      const { error: profileError } = await supabaseAdmin.from('profile').insert({
+        id: authData.user.id,
+        full_name: `${firstName} ${lastName}`,
+        username,
+        bio: 'The main testing account',
+        avatar_url: `https://i.pravatar.cc/150?u=${authData.user.id}`,
+        email,
+        password, // WARNING: Don't store plain passwords
+        user_role,
+        pin
+      });
 
       if (profileError) {
         console.error('[CREATE USER] Profile error:', profileError.message);
@@ -93,7 +93,7 @@ app.post('/create-user', async (req, res) => {
     console.log('[CREATE USER] Failed to create user');
     return res.status(400).json({ error: 'Failed to create user' });
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error) ?? 'An unexpected error occurred';
+    const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('[CREATE USER] Unexpected error:', errorMessage);
     return res.status(500).json({ error: errorMessage });
   }
@@ -127,24 +127,27 @@ app.put('/update-user/:userId', async (req, res) => {
     if (updateData.email) authUpdates.email = updateData.email;
     if (updateData.password) authUpdates.password = updateData.password;
     if (updateData.firstName || updateData.lastName) {
-        authUpdates.user_metadata = {
-            first_name: updateData.firstName,
-            last_name: updateData.lastName,
-            full_name: updateData.full_name || `${updateData.firstName} ${updateData.lastName}`
-        };
+      authUpdates.user_metadata = {
+        first_name: updateData.firstName,
+        last_name: updateData.lastName,
+        full_name: updateData.full_name || `${updateData.firstName} ${updateData.lastName}`
+      };
     }
     console.log(`[UPDATE USER] Auth updates: ${JSON.stringify(authUpdates)}`);
 
     if (Object.keys(authUpdates).length > 0) {
-        console.log('[UPDATE USER] calling supabaseAdmin.auth.admin.updateUserById...');
-        const { error: authError } = await supabaseAdmin.auth.admin.updateUserById(userId, authUpdates);
-        if (authError) {
-           console.error('[UPDATE USER] Auth update error:', authError.message);
-        } else {
-           console.log('[UPDATE USER] Auth updated.');
-        }
+      console.log('[UPDATE USER] calling supabaseAdmin.auth.admin.updateUserById...');
+      const { error: authError } = await supabaseAdmin.auth.admin.updateUserById(
+        userId,
+        authUpdates
+      );
+      if (authError) {
+        console.error('[UPDATE USER] Auth update error:', authError.message);
+      } else {
+        console.log('[UPDATE USER] Auth updated.');
+      }
     } else {
-        console.log('[UPDATE USER] No auth updates needed.');
+      console.log('[UPDATE USER] No auth updates needed.');
     }
 
     console.log(`[UPDATE USER] SUCCESS for ${userId}`);
@@ -154,9 +157,12 @@ app.put('/update-user/:userId', async (req, res) => {
     console.error('[UPDATE USER] CRITICAL ERROR:', error);
     // Log stack trace if available
     if (error.stack) console.error(error.stack);
-    
-    const errorMessage = error instanceof Error ? error.message : String(error) ?? 'An unexpected error occurred';
-    return res.status(500).json({ error: errorMessage, details: 'Check server logs for "table is not defined" source' });
+
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    return res.status(500).json({
+      error: errorMessage,
+      details: 'Check server logs for "table is not defined" source'
+    });
   }
 });
 
@@ -165,10 +171,7 @@ app.delete('/bars/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
-    const { error } = await supabaseAdmin
-      .from('bar')
-      .delete()
-      .eq('id', id);
+    const { error } = await supabaseAdmin.from('bar').delete().eq('id', id);
 
     if (error) throw error;
 
@@ -211,10 +214,7 @@ app.put('/menus/:id', async (req, res) => {
   const updateData = req.body;
 
   try {
-    const { error } = await supabaseAdmin
-      .from('menu')
-      .update(updateData)
-      .eq('id', id);
+    const { error } = await supabaseAdmin.from('menu').update(updateData).eq('id', id);
 
     if (error) throw error;
 
@@ -232,10 +232,7 @@ app.delete('/menus/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
-    const { error } = await supabaseAdmin
-      .from('menu')
-      .delete()
-      .eq('id', id);
+    const { error } = await supabaseAdmin.from('menu').delete().eq('id', id);
 
     if (error) throw error;
 
@@ -256,10 +253,7 @@ app.delete('/delete-user/:userId', async (req, res) => {
 
   try {
     // Delete from profile table
-    const { error: profileError } = await supabaseAdmin
-      .from('profile')
-      .delete()
-      .eq('id', userId);
+    const { error: profileError } = await supabaseAdmin.from('profile').delete().eq('id', userId);
 
     if (profileError) {
       console.error('[DELETE USER] Profile deletion error:', profileError.message);
@@ -277,7 +271,7 @@ app.delete('/delete-user/:userId', async (req, res) => {
     io.emit('user:deleted', { id: userId });
     return res.status(200).json({ message: 'User deleted successfully' });
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error) ?? 'An unexpected error occurred';
+    const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('[DELETE USER] Unexpected error:', errorMessage);
     return res.status(500).json({ error: errorMessage });
   }
@@ -288,7 +282,18 @@ app.delete('/delete-user/:userId', async (req, res) => {
 // Create Drink endpoint
 app.post('/create-drink', async (req, res) => {
   console.log('[CREATE DRINK] Attempting to create new drink');
-  const { name, slug, category, alcoholic, glass, instructions, thumb_url, measurements, ingredients, price } = req.body;
+  const {
+    name,
+    slug,
+    category,
+    alcoholic,
+    glass,
+    instructions,
+    thumb_url,
+    measurements,
+    ingredients,
+    price
+  } = req.body;
 
   // Input validation
   if (!name || !slug || !thumb_url) {
@@ -324,7 +329,7 @@ app.post('/create-drink', async (req, res) => {
     io.emit('drink:created', { id: data?.[0]?.id, name });
     return res.status(200).json({ drinkId: data?.[0]?.id, message: 'Drink created successfully' });
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error) ?? 'An unexpected error occurred';
+    const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('[CREATE DRINK] Unexpected error:', errorMessage);
     return res.status(500).json({ error: errorMessage });
   }
@@ -355,7 +360,7 @@ app.put('/update-drink/:drinkId', async (req, res) => {
     io.emit('drink:updated', { id: drinkId });
     return res.status(200).json({ message: 'Drink updated successfully' });
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error) ?? 'An unexpected error occurred';
+    const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('[UPDATE DRINK] Unexpected error:', errorMessage);
     return res.status(500).json({ error: errorMessage });
   }
@@ -368,10 +373,7 @@ app.delete('/delete-drink/:drinkId', async (req, res) => {
   console.log(`[DELETE DRINK] Attempting to delete drink with ID: ${drinkId}`);
 
   try {
-    const { error: drinkError } = await supabaseAdmin
-      .from('menu_item')
-      .delete()
-      .eq('id', drinkId);
+    const { error: drinkError } = await supabaseAdmin.from('menu_item').delete().eq('id', drinkId);
 
     if (drinkError) {
       console.error('[DELETE DRINK] Deletion error:', drinkError.message);
@@ -382,11 +384,186 @@ app.delete('/delete-drink/:drinkId', async (req, res) => {
     io.emit('drink:deleted', { id: drinkId });
     return res.status(200).json({ message: 'Drink deleted successfully' });
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error) ?? 'An unexpected error occurred';
+    const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('[DELETE DRINK] Unexpected error:', errorMessage);
     return res.status(500).json({ error: errorMessage });
   }
 });
+
+// SWR Drink Fetching Endpoint Helper Functions
+const fetchFromExternal = async (lookupId) => {
+  try {
+    console.log(`[EXTERNAL FETCH] Looking up ${lookupId} in CocktailDB`);
+    let url = `https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=${lookupId}`;
+    let response = await axios.get(url);
+
+    if (!response.data.drinks) {
+      url = `https://www.thecocktaildb.com/api/json/v1/1/search.php?s=${lookupId}`;
+      response = await axios.get(url);
+    }
+    return response.data.drinks ? response.data.drinks[0] : null;
+  } catch (e) {
+    console.error('[EXTERNAL FETCH] Error:', e.message);
+    return null;
+  }
+};
+
+const resolveCategory = async (categoryName) => {
+  const categorySlug = categoryName
+    .toLowerCase()
+    .replaceAll(/[^a-z0-9]+/g, '-')
+    .replaceAll(/(^-|-$)/g, '');
+
+  try {
+    const { data: existingCat } = await supabaseAdmin
+      .from('menu_item_category')
+      .select('name')
+      .or(`name.eq.${categoryName},slug.eq.${categorySlug}`)
+      .single();
+
+    if (existingCat) return existingCat.name;
+
+    const { data: firstMenu } = await supabaseAdmin.from('menu').select('name').limit(1).single();
+    const menuName = firstMenu ? firstMenu.name : 'Standard';
+
+    if (!firstMenu) {
+      await supabaseAdmin
+        .from('menu')
+        .upsert({ name: 'Standard', slug: 'standard', active: true }, { onConflict: 'name' });
+    }
+
+    const { data: newCat, error: catError } = await supabaseAdmin
+      .from('menu_item_category')
+      .insert({ name: categoryName, slug: categorySlug, menu: menuName, active: true })
+      .select()
+      .single();
+
+    if (newCat) return newCat.name;
+    if (catError) console.error('[CACHE WRITE] Category creation error:', catError.message);
+  } catch (e) {
+    console.error('[CACHE WRITE] Category resolution error:', e.message);
+  }
+
+  const { data: fallbackCat } = await supabaseAdmin
+    .from('menu_item_category')
+    .select('name')
+    .limit(1)
+    .single();
+  return fallbackCat ? fallbackCat.name : null;
+};
+
+const resolveGlass = async (glassName) => {
+  if (!glassName) return null;
+  const glassSlug = glassName
+    .toLowerCase()
+    .replaceAll(/[^a-z0-9]+/g, '-')
+    .replaceAll(/(^-|-$)/g, '');
+
+  try {
+    const { data: existingGlass } = await supabaseAdmin
+      .from('drinks_glass')
+      .select('name')
+      .ilike('name', glassName)
+      .maybeSingle();
+
+    if (existingGlass) return existingGlass.name;
+
+    const { error: glassError } = await supabaseAdmin
+      .from('drinks_glass')
+      .upsert({ name: glassName, slug: glassSlug }, { onConflict: 'name' });
+    if (glassError) console.log('[CACHE WRITE] Glass upsert warning:', glassError.message);
+  } catch (e) {
+    console.error('[CACHE WRITE] Glass resolution error:', e.message);
+  }
+  return glassName;
+};
+
+const cacheToDb = async (externalDrink, existingRecord = null) => {
+  if (!externalDrink) return null;
+
+  const categoryRef = await resolveCategory(externalDrink.strCategory || 'Other');
+  if (!categoryRef) {
+    console.error('[CACHE WRITE] CRITICAL: No valid category found. Cannot save drink.');
+    return null;
+  }
+
+  const resolvedGlassName = await resolveGlass(externalDrink.strGlass);
+
+  const drinkData = {
+    name: externalDrink.strDrink,
+    slug: externalDrink.strDrink.toLowerCase().replaceAll(' ', '-'),
+    category: categoryRef,
+    thumb_url: externalDrink.strDrinkThumb,
+    instructions: JSON.stringify(instructionResolver.resolve(externalDrink.strInstructions)),
+    glass: resolvedGlassName,
+    alcoholic: externalDrink.strAlcoholic === 'Alcoholic',
+    measurements: [],
+    ingredients: [],
+    active: true,
+    last_modified: new Date().toISOString()
+  };
+
+  if (existingRecord) {
+    drinkData.id = existingRecord.id;
+    drinkData.slug = existingRecord.slug;
+  }
+
+  for (let i = 1; i <= 15; i++) {
+    if (externalDrink[`strIngredient${i}`]) {
+      drinkData.ingredients.push(externalDrink[`strIngredient${i}`]);
+      drinkData.measurements.push(externalDrink[`strMeasure${i}`] || '');
+    }
+  }
+
+  const upsertConfig = existingRecord ? { onConflict: 'id' } : { onConflict: 'slug' };
+  const { data: saved, error } = await supabaseAdmin
+    .from('menu_item')
+    .upsert(drinkData, upsertConfig)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('[CACHE WRITE] Error saving to DB:', error.message);
+  } else {
+    console.log('[CACHE WRITE] Saved to DB:', saved ? saved.id : 'Unknown');
+    if (saved) io.emit('drink:updated', { id: saved.id });
+  }
+
+  return saved;
+};
+
+const checkAndTriggerRevalidation = (cachedDrink, res) => {
+  const lastMod = new Date(cachedDrink.last_modified).getTime();
+  const now = Date.now();
+  const oneDay = 24 * 60 * 60 * 1000;
+
+  const isDataIncomplete =
+    !cachedDrink.instructions ||
+    !cachedDrink.ingredients ||
+    cachedDrink.ingredients.length === 0 ||
+    !cachedDrink.measurements ||
+    cachedDrink.measurements.length === 0;
+
+  const needsRevalidation = now - lastMod > oneDay || isDataIncomplete;
+
+  if (needsRevalidation) {
+    console.log(
+      '[SWR] Triggering background revalidation. Reason:',
+      isDataIncomplete ? 'Incomplete Data' : 'Stale Data'
+    );
+    res.set('X-Cache-Revalidating', 'true');
+
+    setTimeout(() => {
+      fetchFromExternal(cachedDrink.id)
+        .then((fresh) => {
+          if (fresh) cacheToDb(fresh, cachedDrink);
+        })
+        .catch((err) => console.error('[SWR] Background fetch failed:', err.message));
+    }, 0);
+  } else {
+    res.set('X-Cache-Revalidating', 'false');
+  }
+};
 
 // SWR Drink Fetching Endpoint
 app.get('/drinks/:id', async (req, res) => {
@@ -395,226 +572,27 @@ app.get('/drinks/:id', async (req, res) => {
 
   try {
     // 1. Check Internal DB (Cache)
-    let query = supabaseAdmin
-      .from('menu_item')
-      .select('*, category (name, slug)')
+    let query = supabaseAdmin.from('menu_item').select('*, category (name, slug)');
 
-    if (!isNaN(id)) {
-        // If numeric, check both ID and Slug (some slugs might be numeric strings, unlikely but possible)
-        query = query.or(`id.eq.${id},slug.eq.${id}`);
+    if (Number.isNaN(Number(id))) {
+      // If non-numeric, it MUST be a slug
+      query = query.eq('slug', id);
     } else {
-        // If non-numeric, it MUST be a slug
-        query = query.eq('slug', id);
+      // If numeric, check both ID and Slug (some slugs might be numeric strings, unlikely but possible)
+      query = query.or(`id.eq.${id},slug.eq.${id}`);
     }
 
     const { data: cachedDrink, error: dbError } = await query.single();
 
-    if (dbError && dbError.code !== 'PGRST116') { // PGRST116 is "No rows found"
+    if (dbError && dbError.code !== 'PGRST116') {
+      // PGRST116 is "No rows found"
       console.error('[GET DRINK] Database check error:', dbError.message);
     }
 
-    // Helper to fetch from External API
-    const fetchFromExternal = async (lookupId) => {
-      try {
-        console.log(`[EXTERNAL FETCH] Looking up ${lookupId} in CocktailDB`);
-        // If it's a number, assume ID. If string, assume name/search.
-        // For simplicity, let's try searching by ID first then name.
-        let url = `https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=${lookupId}`;
-        let response = await axios.get(url);
-        
-        if (!response.data.drinks) {
-            // Fallback: Try search by name if it looks like a slug
-             url = `https://www.thecocktaildb.com/api/json/v1/1/search.php?s=${lookupId}`;
-             response = await axios.get(url);
-        }
-
-        return response.data.drinks ? response.data.drinks[0] : null;
-
-      } catch (e) {
-        console.error('[EXTERNAL FETCH] Error:', e.message);
-        return null;
-      }
-    };
-
-    // Helper to map and save to DB
-    const cacheToDb = async (externalDrink, existingRecord = null) => {
-        if (!externalDrink) return null;
-
-        // 1. Resolve Category (By Name, as per schema)
-        let categoryRef = null; 
-        const categoryName = externalDrink.strCategory || 'Other';
-        const categorySlug = categoryName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-
-        try {
-            // Check if exists in the correct table
-            const { data: existingCat } = await supabaseAdmin
-                .from('menu_item_category')
-                .select('name') // Select NAME, not ID
-                .or(`name.eq.${categoryName},slug.eq.${categorySlug}`)
-                .single();
-
-            if (existingCat) {
-                categoryRef = existingCat.name;
-            } else {
-                // Create new category
-                // We need a menu NAME for the category.
-                // Let's look for 'Standard' or ANY menu.
-                const { data: firstMenu } = await supabaseAdmin.from('menu').select('name').limit(1).single();
-                const menuName = firstMenu ? firstMenu.name : 'Standard'; // Fallback to 'Standard' text if DB empty
-
-                // Ensure 'Standard' menu exists if we are falling back to it and it wasn't found
-                if (!firstMenu) {
-                     await supabaseAdmin.from('menu').upsert({ name: 'Standard', slug: 'standard', active: true }, { onConflict: 'name' });
-                }
-
-                const { data: newCat, error: catError } = await supabaseAdmin
-                    .from('menu_item_category')
-                    .insert({
-                        name: categoryName,
-                        slug: categorySlug,
-                        menu: menuName, // Use NAME, not ID
-                        active: true
-                    })
-                    .select()
-                    .single();
-                
-                if (newCat) categoryRef = newCat.name;
-                else if (catError) console.error('[CACHE WRITE] Category creation error:', catError.message);
-            }
-        } catch (e) {
-            console.error('[CACHE WRITE] Category resolution error:', e.message);
-        }
-
-        // Final Fallback: Get ANY existing category NAME
-        if (!categoryRef) {
-             const { data: fallbackCat } = await supabaseAdmin
-                .from('menu_item_category')
-                .select('name')
-                .limit(1)
-                .single();
-             if (fallbackCat) categoryRef = fallbackCat.name;
-        }
-
-        if (!categoryRef) {
-            console.error('[CACHE WRITE] CRITICAL: No valid category found. Cannot save drink.');
-            return null;
-        }
-
-        // 1.5 Resolve Glass (Ensure it exists, Case-Insensitive)
-        let resolvedGlassName = externalDrink.strGlass;
-        
-        if (externalDrink.strGlass) {
-            try {
-                const glassName = externalDrink.strGlass;
-                const glassSlug = glassName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-                
-                // 1. Try to find existing glass (Case Insensitive) to avoid "Highball Glass" vs "Highball glass"
-                const { data: existingGlass } = await supabaseAdmin
-                    .from('drinks_glass')
-                    .select('name')
-                    .ilike('name', glassName)
-                    .maybeSingle(); // Use maybeSingle to avoid error if 0 or multiple
-
-                if (existingGlass) {
-                    // Use the canonical name from DB
-                     resolvedGlassName = existingGlass.name;
-                } else {
-                    // 2. Not found, create it
-                    const { error: glassError } = await supabaseAdmin
-                        .from('drinks_glass')
-                        .upsert({ name: glassName, slug: glassSlug }, { onConflict: 'name' }); 
-
-                     if (glassError) {
-                         console.log('[CACHE WRITE] Glass upsert warning:', glassError.message);
-                     }
-                }
-            } catch (e) {
-                console.error('[CACHE WRITE] Glass resolution error:', e.message);
-            }
-        }
-
-        const drinkData = {
-            name: externalDrink.strDrink,
-            slug: externalDrink.strDrink.toLowerCase().replace(/ /g, '-'),
-            category: categoryRef,
-            thumb_url: externalDrink.strDrinkThumb,
-            // Resolver returns an array, we stringify it to store in TEXT column for now
-            // or we could join it. Given User request "destructure", JSON is safer to preserve structure.
-            instructions: JSON.stringify(instructionResolver.resolve(externalDrink.strInstructions)),
-            glass: resolvedGlassName, // Use the resolved name
-            alcoholic: externalDrink.strAlcoholic === 'Alcoholic',
-            measurements: [], 
-            ingredients: [], 
-            active: true,
-            last_modified: new Date().toISOString()
-        };
-
-        // If updating an existing record, preserve ID and Slug to avoid conflicts/URL breaking
-        if (existingRecord) {
-            drinkData.id = existingRecord.id;
-            drinkData.slug = existingRecord.slug;
-        }
-
-        // Parse ingredients/measurements
-        for (let i = 1; i <= 15; i++) {
-            if (externalDrink[`strIngredient${i}`]) {
-                drinkData.ingredients.push(externalDrink[`strIngredient${i}`]);
-                drinkData.measurements.push(externalDrink[`strMeasure${i}`] || '');
-            }
-        }
-        
-        // Upsert based on ID if we have it (Update), or Slug if we don't (Insert/Update)
-        const upsertConfig = existingRecord ? { onConflict: 'id' } : { onConflict: 'slug' };
-
-        const { data: saved, error } = await supabaseAdmin
-            .from('menu_item')
-            .upsert(drinkData, upsertConfig)
-            .select()
-            .single();
-
-        if (error) console.error('[CACHE WRITE] Error saving to DB:', error.message);
-        else {
-            console.log('[CACHE WRITE] Saved to DB:', saved ? saved.id : 'Unknown');
-            if (saved) {
-                io.emit('drink:updated', { id: saved.id });
-                // Also emit specific update for list views if needed, but drink:updated covers detail
-            }
-        }
-
-        return saved;
-    };
-
     // 2. Logic: Cache Hit
     if (cachedDrink) {
-        // BACKGROUND REVALIDATION CHECK
-        // Only if older than X time (e.g., 24h)
-        const lastMod = new Date(cachedDrink.last_modified).getTime();
-        const now = new Date().getTime();
-        const oneDay = 24 * 60 * 60 * 1000;
-
-        const isDataIncomplete = !cachedDrink.instructions || 
-                                 !cachedDrink.ingredients || cachedDrink.ingredients.length === 0 ||
-                                 !cachedDrink.measurements || cachedDrink.measurements.length === 0;
-
-        const needsRevalidation = (now - lastMod > oneDay) || isDataIncomplete;
-
-        if (needsRevalidation) {
-            console.log('[SWR] Triggering background revalidation. Reason:', isDataIncomplete ? 'Incomplete Data' : 'Stale Data');
-            res.set('X-Cache-Revalidating', 'true');
-            
-            // Trigger background fetch (detached from request)
-            setTimeout(() => {
-                fetchFromExternal(cachedDrink.id).then(fresh => {
-                    if(fresh) cacheToDb(fresh, cachedDrink);
-                }).catch(err => console.error('[SWR] Background fetch failed:', err.message));
-            }, 0);
-        } else {
-            res.set('X-Cache-Revalidating', 'false');
-        }
-
-        // RETURN RESPONSE
-        res.status(200).json(cachedDrink);
-        return;
+      checkAndTriggerRevalidation(cachedDrink, res);
+      return res.status(200).json(cachedDrink);
     }
 
     // 3. Logic: Cache Miss
@@ -622,15 +600,14 @@ app.get('/drinks/:id', async (req, res) => {
     const freshData = await fetchFromExternal(id);
 
     if (freshData) {
-        // Save to DB and return the *saved* record to ensure ID matches our system
-        const savedRecord = await cacheToDb(freshData);
-        return res.status(200).json(savedRecord || freshData);
+      // Save to DB and return the *saved* record to ensure ID matches our system
+      const savedRecord = await cacheToDb(freshData);
+      return res.status(200).json(savedRecord || freshData);
     } else {
-        return res.status(404).json({ error: 'Drink not found' });
+      return res.status(404).json({ error: 'Drink not found' });
     }
-
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error) ?? 'An unexpected error occurred';
+    const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('[GET DRINK] Unexpected error:', errorMessage);
     res.status(500).json({ error: errorMessage });
   }
@@ -676,7 +653,7 @@ app.post('/tabs', async (req, res) => {
     io.emit('tab:created', { id: data?.[0]?.id, user_id, tab_number });
     return res.status(200).json({ tabId: data?.[0]?.id, message: 'Tab created successfully' });
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error) ?? 'An unexpected error occurred';
+    const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('[CREATE TAB] Unexpected error:', errorMessage);
     return res.status(500).json({ error: errorMessage });
   }
@@ -707,7 +684,7 @@ app.put('/tabs/:tabId', async (req, res) => {
     io.emit('tab:updated', { id: tabId });
     return res.status(200).json({ message: 'Tab updated successfully' });
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error) ?? 'An unexpected error occurred';
+    const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('[UPDATE TAB] Unexpected error:', errorMessage);
     return res.status(500).json({ error: errorMessage });
   }
@@ -721,7 +698,9 @@ app.post('/tabs/items', async (req, res) => {
   // Input validation
   if (!tab_id || !menu_item_id || !quantity || !unit_price || !item_total) {
     console.log('[ADD TAB ITEM] Missing required fields');
-    return res.status(400).json({ error: 'Missing required fields: tab_id, menu_item_id, quantity, unit_price, item_total' });
+    return res.status(400).json({
+      error: 'Missing required fields: tab_id, menu_item_id, quantity, unit_price, item_total'
+    });
   }
 
   try {
@@ -747,7 +726,7 @@ app.post('/tabs/items', async (req, res) => {
     io.emit('tab:item:added', { id: data?.[0]?.id, tab_id });
     return res.status(200).json({ itemId: data?.[0]?.id, message: 'Item added successfully' });
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error) ?? 'An unexpected error occurred';
+    const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('[ADD TAB ITEM] Unexpected error:', errorMessage);
     return res.status(500).json({ error: errorMessage });
   }
@@ -763,11 +742,11 @@ app.put('/tabs/items/:itemId', async (req, res) => {
   try {
     // Fetch item first to get tab_id
     const { data: itemToUpdate } = await supabaseAdmin
-        .from('tab_item')
-        .select('tab_id')
-        .eq('id', itemId)
-        .single();
-    
+      .from('tab_item')
+      .select('tab_id')
+      .eq('id', itemId)
+      .single();
+
     if (!itemToUpdate) return res.status(404).json({ error: 'Item not found' });
     const tabId = itemToUpdate.tab_id;
 
@@ -789,7 +768,7 @@ app.put('/tabs/items/:itemId', async (req, res) => {
     io.emit('tab:item:updated', { id: itemId, tab_id: tabId, ...updateData });
     return res.status(200).json({ message: 'Item updated successfully' });
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error) ?? 'An unexpected error occurred';
+    const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('[UPDATE TAB ITEM] Unexpected error:', errorMessage);
     return res.status(500).json({ error: errorMessage });
   }
@@ -803,19 +782,16 @@ app.delete('/tabs/items/:itemId', async (req, res) => {
 
   try {
     // Fetch item first to get tab_id
-     const { data: itemToDelete } = await supabaseAdmin
-        .from('tab_item')
-        .select('tab_id')
-        .eq('id', itemId)
-        .single();
-    
+    const { data: itemToDelete } = await supabaseAdmin
+      .from('tab_item')
+      .select('tab_id')
+      .eq('id', itemId)
+      .single();
+
     if (!itemToDelete) return res.status(404).json({ error: 'Item not found' });
     const tabId = itemToDelete.tab_id;
 
-    const { error: itemError } = await supabaseAdmin
-      .from('tab_item')
-      .delete()
-      .eq('id', itemId);
+    const { error: itemError } = await supabaseAdmin.from('tab_item').delete().eq('id', itemId);
 
     if (itemError) {
       console.error('[DELETE TAB ITEM] Deletion error:', itemError.message);
@@ -827,7 +803,7 @@ app.delete('/tabs/items/:itemId', async (req, res) => {
     io.emit('tab:item:deleted', { id: itemId, tab_id: tabId });
     return res.status(200).json({ message: 'Item deleted successfully' });
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error) ?? 'An unexpected error occurred';
+    const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('[DELETE TAB ITEM] Unexpected error:', errorMessage);
     return res.status(500).json({ error: errorMessage });
   }
@@ -841,7 +817,9 @@ app.post('/tabs/splits', async (req, res) => {
   // Input validation
   if (!tab_id || !split_number || !subtotal || !tax_on_split || !total_owed) {
     console.log('[CREATE TAB SPLIT] Missing required fields');
-    return res.status(400).json({ error: 'Missing required fields: tab_id, split_number, subtotal, tax_on_split, total_owed' });
+    return res.status(400).json({
+      error: 'Missing required fields: tab_id, split_number, subtotal, tax_on_split, total_owed'
+    });
   }
 
   try {
@@ -867,7 +845,7 @@ app.post('/tabs/splits', async (req, res) => {
     console.log('[CREATE TAB SPLIT] Split created successfully');
     return res.status(200).json({ splitId: data?.[0]?.id, message: 'Split created successfully' });
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error) ?? 'An unexpected error occurred';
+    const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('[CREATE TAB SPLIT] Unexpected error:', errorMessage);
     return res.status(500).json({ error: errorMessage });
   }
@@ -897,7 +875,7 @@ app.put('/tabs/splits/:splitId', async (req, res) => {
     console.log(`[UPDATE TAB SPLIT] Split ${splitId} updated successfully`);
     return res.status(200).json({ message: 'Split updated successfully' });
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error) ?? 'An unexpected error occurred';
+    const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('[UPDATE TAB SPLIT] Unexpected error:', errorMessage);
     return res.status(500).json({ error: errorMessage });
   }
@@ -911,7 +889,9 @@ app.post('/tabs/payments', async (req, res) => {
   // Input validation
   if (!tab_id || !amount_paid || !payment_method) {
     console.log('[CREATE PAYMENT] Missing required fields');
-    return res.status(400).json({ error: 'Missing required fields: tab_id, amount_paid, payment_method' });
+    return res
+      .status(400)
+      .json({ error: 'Missing required fields: tab_id, amount_paid, payment_method' });
   }
 
   try {
@@ -935,9 +915,11 @@ app.post('/tabs/payments', async (req, res) => {
     console.log('[CREATE PAYMENT] Payment recorded successfully');
     io.emit('tab:updated', { id: tab_id });
     io.emit('tab:payment:added', { id: data?.[0]?.id, tab_id });
-    return res.status(200).json({ paymentId: data?.[0]?.id, message: 'Payment recorded successfully' });
+    return res
+      .status(200)
+      .json({ paymentId: data?.[0]?.id, message: 'Payment recorded successfully' });
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error) ?? 'An unexpected error occurred';
+    const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('[CREATE PAYMENT] Unexpected error:', errorMessage);
     return res.status(500).json({ error: errorMessage });
   }
@@ -968,7 +950,7 @@ app.post('/tabs/:tabId/settle', async (req, res) => {
     io.emit('tab:updated', { id: tabId, status: 'settled' });
     return res.status(200).json({ message: 'Tab settled successfully' });
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error) ?? 'An unexpected error occurred';
+    const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('[SETTLE TAB] Unexpected error:', errorMessage);
     return res.status(500).json({ error: errorMessage });
   }
@@ -1004,10 +986,7 @@ app.put('/bars/:id', async (req, res) => {
   const updateData = req.body;
 
   try {
-    const { error } = await supabaseAdmin
-      .from('bar')
-      .update(updateData)
-      .eq('id', id);
+    const { error } = await supabaseAdmin.from('bar').update(updateData).eq('id', id);
 
     if (error) throw error;
 

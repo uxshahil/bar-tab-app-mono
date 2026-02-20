@@ -1,12 +1,14 @@
 {
-  "name": "bar-tab-api-netlify",
+  "name": "bar-tab-api",
   "version": "1.0.0",
   "main": "index.js",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "npx ts-node index.js",
-    "start": "node index.js"
+    "start": "node index.js",
+    "lint": "eslint .",
+    "format": "prettier --write ."
   },
   "author": "shahil@themidastouch.co.za",
   "license": "ISC",
@@ -17,12 +19,16 @@
     "cors": "^2.8.6",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
-    "netlify-cli": "^23.15.0",
-    "netlify-lambda": "^2.0.16",
     "serverless-http": "^4.0.0",
     "socket.io": "^4.8.3"
   },
   "devDependencies": {
-    "@types/express": "^5.0.6"
+    "@eslint/js": "^10.0.1",
+    "@types/express": "^5.0.6",
+    "eslint": "^10.0.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.5",
+    "globals": "^17.3.0",
+    "prettier": "^3.8.1"
   }
 }
