@@ -46,7 +46,12 @@ export default defineConfig({
       // Recommend to enable
       viteOptimizeDeps: true,
 
-      dirs: ['./src/stores/**', 'src/composables/**']
+      dirs: [
+        './src/stores/**',
+        './src/composables/**',
+        './src/services/api/**',
+        './src/interfaces/**'
+      ]
     }),
     vue({
       template: {

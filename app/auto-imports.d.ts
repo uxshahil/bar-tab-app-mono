@@ -7,14 +7,15 @@
 export {}
 declare global {
   const EffectScope: typeof import('vue').EffectScope
-  const UserRole: typeof import('./src/enums/auth').UserRole
   const acceptHMRUpdate: typeof import('pinia').acceptHMRUpdate
+  const barApi: typeof import('./src/services/api/barApi').default
   const computed: typeof import('vue').computed
   const createApp: typeof import('vue').createApp
   const customRef: typeof import('vue').customRef
   const defineAsyncComponent: typeof import('vue').defineAsyncComponent
   const defineComponent: typeof import('vue').defineComponent
   const defineStore: typeof import('pinia').defineStore
+  const drinkApi: typeof import('./src/services/api/drinkApi').default
   const effectScope: typeof import('vue').effectScope
   const getCurrentInstance: typeof import('vue').getCurrentInstance
   const getCurrentScope: typeof import('vue').getCurrentScope
@@ -26,8 +27,8 @@ declare global {
   const isReadonly: typeof import('vue').isReadonly
   const isRef: typeof import('vue').isRef
   const isShallow: typeof import('vue').isShallow
-  const loaders: typeof import('./src/stores/loaders/index.js').default
   const markRaw: typeof import('vue').markRaw
+  const menuApi: typeof import('./src/services/api/menuApi').default
   const nextTick: typeof import('vue').nextTick
   const onActivated: typeof import('vue').onActivated
   const onBeforeMount: typeof import('vue').onBeforeMount
@@ -45,6 +46,7 @@ declare global {
   const onUnmounted: typeof import('vue').onUnmounted
   const onUpdated: typeof import('vue').onUpdated
   const onWatcherCleanup: typeof import('vue').onWatcherCleanup
+  const profileApi: typeof import('./src/services/api/profileApi').default
   const provide: typeof import('vue').provide
   const reactive: typeof import('vue').reactive
   const readonly: typeof import('vue').readonly
@@ -54,6 +56,7 @@ declare global {
   const shallowReadonly: typeof import('vue').shallowReadonly
   const shallowRef: typeof import('vue').shallowRef
   const storeToRefs: typeof import('pinia').storeToRefs
+  const tabApi: typeof import('./src/services/api/tabApi').default
   const toRaw: typeof import('vue').toRaw
   const toRef: typeof import('vue').toRef
   const toRefs: typeof import('vue').toRefs
@@ -64,28 +67,27 @@ declare global {
   const useAttrs: typeof import('vue').useAttrs
   const useAuthStore: typeof import('./src/stores/auth').useAuthStore
   const useBarsStore: typeof import('./src/stores/loaders/bars').useBarsStore
-  const useCollabs: typeof import('./src/composables/collabs').useCollabs
   const useCssModule: typeof import('vue').useCssModule
   const useCssVars: typeof import('vue').useCssVars
+  const useDrinkSheetStore: typeof import('./src/stores/ui/drinkSheet').useDrinkSheetStore
   const useDrinksStore: typeof import('./src/stores/loaders/drinks').useDrinksStore
   const useErrorStore: typeof import('./src/stores/error').useErrorStore
-  const useFormErrors: typeof import('./src/composables/formErrors').useFormErrors
   const useId: typeof import('vue').useId
   const useMenusStore: typeof import('./src/stores/loaders/menus').useMenusStore
   const useMeta: typeof import('vue-meta').useMeta
   const useModel: typeof import('vue').useModel
+  const useNewTabSheetStore: typeof import('./src/stores/ui/newTabSheet').useNewTabSheetStore
   const usePageStore: typeof import('./src/stores/page').usePageStore
   const usePaginationStore: typeof import('./src/stores/ui/pagination').usePaginationStore
-  const useProjectsStore: typeof import('./src/stores/loaders/users').useProjectsStore
   const useRoute: typeof import('vue-router').useRoute
   const useRouter: typeof import('vue-router').useRouter
   const useSlots: typeof import('vue').useSlots
+  const useSplitBillSheetStore: typeof import('./src/stores/ui/splitBillSheet').useSplitBillSheetStore
   const useTabSheetStore: typeof import('./src/stores/tabSheet').useTabSheetStore
   const useTabsStore: typeof import('./src/stores/loaders/tabs').useTabsStore
-  const useTasksStore: typeof import('./src/stores/loaders/drinks').useTasksStore
   const useTemplateRef: typeof import('vue').useTemplateRef
+  const useUserSheetStore: typeof import('./src/stores/ui/userSheet').useUserSheetStore
   const useUsersStore: typeof import('./src/stores/loaders/users').useUsersStore
-  const usebs: typeof import('./src/composables/collabs').usebs
   const watch: typeof import('vue').watch
   const watchEffect: typeof import('vue').watchEffect
   const watchPostEffect: typeof import('vue').watchPostEffect
@@ -96,4 +98,13 @@ declare global {
   // @ts-ignore
   export type { Component, Slot, Slots, ComponentPublicInstance, ComputedRef, DirectiveBinding, ExtractDefaultPropTypes, ExtractPropTypes, ExtractPublicPropTypes, InjectionKey, PropType, Ref, ShallowRef, MaybeRef, MaybeRefOrGetter, VNode, WritableComputedRef } from 'vue'
   import('vue')
+  // @ts-ignore
+  export type { CreateNewDrink, EditDrink, DeleteDrink } from './src/interfaces/DrinkInterfaces'
+  import('./src/interfaces/DrinkInterfaces')
+  // @ts-ignore
+  export type { TabStatus, CreateNewTab, Tab, EditTab, DeleteTab, AddTabItem, UpdateTabStatus, TabSummary } from './src/interfaces/TabInterfaces'
+  import('./src/interfaces/TabInterfaces')
+  // @ts-ignore
+  export type { CreateNewUser, EditUser, DeleteUser } from './src/interfaces/UserInterfaces'
+  import('./src/interfaces/UserInterfaces')
 }
