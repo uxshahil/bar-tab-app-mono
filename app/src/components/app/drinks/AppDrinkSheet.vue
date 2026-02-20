@@ -150,7 +150,6 @@ const onSubmit = form.handleSubmit(async (values) => {
       }
       await drinkApi.editDrink(editPayload)
       await getDrinks()
-      await getDrinks()
     } else {
       await drinkApi.createDrink(drinkData as unknown as CreateNewDrink)
       await getDrinks()
