@@ -83,6 +83,7 @@ declare module 'vue' {
     EditablePriceCell: typeof import('./src/components/ui/data-table-cells/EditablePriceCell.vue')['default']
     FormControl: typeof import('./src/components/ui/form/FormControl.vue')['default']
     FormDescription: typeof import('./src/components/ui/form/FormDescription.vue')['default']
+    FormField: typeof import('./src/components/ui/form/FormField.vue')['default']
     FormItem: typeof import('./src/components/ui/form/FormItem.vue')['default']
     FormLabel: typeof import('./src/components/ui/form/FormLabel.vue')['default']
     FormMessage: typeof import('./src/components/ui/form/FormMessage.vue')['default']

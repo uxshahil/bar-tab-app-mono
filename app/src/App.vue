@@ -16,8 +16,6 @@ onMounted(() => {
 
 const { user, profile } = storeToRefs(useAuthStore())
 
-console.log(profile.value)
-
 const AdminAuthLayout = defineAsyncComponent(
   () => import('./components/layout/main/AdminAuthLayout.vue'),
 )
@@ -27,6 +25,8 @@ const StaffAuthLayout = defineAsyncComponent(
 )
 
 const GuestLayout = defineAsyncComponent(() => import('./components/layout/main/GuestLayout.vue'))
+
+const AppAddToTab = defineAsyncComponent(() => import('./components/app/tab/AppAddToTab.vue'))
 
 useMeta({
   title: 'Bar Tab App',

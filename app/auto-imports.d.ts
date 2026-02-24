@@ -7,6 +7,7 @@
 export {}
 declare global {
   const EffectScope: typeof import('vue').EffectScope
+  const FlexRender: typeof import('@tanstack/vue-table').FlexRender
   const RouterLink: typeof import('vue-router').RouterLink
   const VAT_RATE: typeof import('./src/utils/tabCalculations').VAT_RATE
   const acceptHMRUpdate: typeof import('pinia').acceptHMRUpdate
@@ -35,9 +36,11 @@ declare global {
   const effectScope: typeof import('vue').effectScope
   const fetchDrinks: typeof import('./src/services/supabase/queries/drinkQueries').fetchDrinks
   const formatCurrency: typeof import('./src/utils/currency').formatCurrency
+  const getCoreRowModel: typeof import('@tanstack/vue-table').getCoreRowModel
   const getCurrentInstance: typeof import('vue').getCurrentInstance
   const getCurrentScope: typeof import('vue').getCurrentScope
   const getCurrentWatcher: typeof import('vue').getCurrentWatcher
+  const getPaginationRowModel: typeof import('@tanstack/vue-table').getPaginationRowModel
   const h: typeof import('vue').h
   const inject: typeof import('vue').inject
   const isProxy: typeof import('vue').isProxy
@@ -128,6 +131,7 @@ declare global {
   const useTemplateRef: typeof import('vue').useTemplateRef
   const useUserSheetStore: typeof import('./src/stores/ui/userSheet').useUserSheetStore
   const useUsersStore: typeof import('./src/stores/loaders/users').useUsersStore
+  const useVueTable: typeof import('@tanstack/vue-table').useVueTable
   const userTabsQuery: typeof import('./src/services/supabase/queries/tabQueries').userTabsQuery
   const watch: typeof import('vue').watch
   const watchEffect: typeof import('vue').watchEffect
@@ -154,4 +158,143 @@ declare global {
   // @ts-ignore
   export type { MenuInjectionOptions } from './src/providers/injectionKeys'
   import('./src/providers/injectionKeys')
+}
+
+// for vue template auto import
+import { UnwrapRef } from 'vue'
+declare module 'vue' {
+  interface GlobalComponents {}
+  interface ComponentCustomProperties {
+    readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
+    readonly FlexRender: UnwrapRef<typeof import('@tanstack/vue-table')['FlexRender']>
+    readonly RouterLink: UnwrapRef<typeof import('vue-router')['RouterLink']>
+    readonly VAT_RATE: UnwrapRef<typeof import('./src/utils/tabCalculations')['VAT_RATE']>
+    readonly acceptHMRUpdate: UnwrapRef<typeof import('pinia')['acceptHMRUpdate']>
+    readonly addTabItemQuery: UnwrapRef<typeof import('./src/services/supabase/queries/tabQueries')['addTabItemQuery']>
+    readonly barApi: UnwrapRef<typeof import('./src/services/api/barApi')['default']>
+    readonly barByIdQuery: UnwrapRef<typeof import('./src/services/supabase/queries/barQueries')['barByIdQuery']>
+    readonly barQuery: UnwrapRef<typeof import('./src/services/supabase/queries/barQueries')['barQuery']>
+    readonly barsQuery: UnwrapRef<typeof import('./src/services/supabase/queries/barQueries')['barsQuery']>
+    readonly calculateTabTotals: UnwrapRef<typeof import('./src/utils/tabCalculations')['calculateTabTotals']>
+    readonly computed: UnwrapRef<typeof import('vue')['computed']>
+    readonly createApp: UnwrapRef<typeof import('vue')['createApp']>
+    readonly createTabPaymentQuery: UnwrapRef<typeof import('./src/services/supabase/queries/tabQueries')['createTabPaymentQuery']>
+    readonly createTabQuery: UnwrapRef<typeof import('./src/services/supabase/queries/tabQueries')['createTabQuery']>
+    readonly createTabSplitQuery: UnwrapRef<typeof import('./src/services/supabase/queries/tabQueries')['createTabSplitQuery']>
+    readonly customRef: UnwrapRef<typeof import('vue')['customRef']>
+    readonly defineAsyncComponent: UnwrapRef<typeof import('vue')['defineAsyncComponent']>
+    readonly defineComponent: UnwrapRef<typeof import('vue')['defineComponent']>
+    readonly defineStore: UnwrapRef<typeof import('pinia')['defineStore']>
+    readonly deleteDrinkQuery: UnwrapRef<typeof import('./src/services/supabase/queries/drinkQueries')['deleteDrinkQuery']>
+    readonly deleteTabItemQuery: UnwrapRef<typeof import('./src/services/supabase/queries/tabQueries')['deleteTabItemQuery']>
+    readonly deleteTabSplitQuery: UnwrapRef<typeof import('./src/services/supabase/queries/tabQueries')['deleteTabSplitQuery']>
+    readonly drinkApi: UnwrapRef<typeof import('./src/services/api/drinkApi')['default']>
+    readonly drinkQuery: UnwrapRef<typeof import('./src/services/supabase/queries/drinkQueries')['drinkQuery']>
+    readonly drinksByCategoryQuery: UnwrapRef<typeof import('./src/services/supabase/queries/drinkQueries')['drinksByCategoryQuery']>
+    readonly drinksQuery: UnwrapRef<typeof import('./src/services/supabase/queries/drinkQueries')['drinksQuery']>
+    readonly effectScope: UnwrapRef<typeof import('vue')['effectScope']>
+    readonly fetchDrinks: UnwrapRef<typeof import('./src/services/supabase/queries/drinkQueries')['fetchDrinks']>
+    readonly formatCurrency: UnwrapRef<typeof import('./src/utils/currency')['formatCurrency']>
+    readonly getCoreRowModel: UnwrapRef<typeof import('@tanstack/vue-table')['getCoreRowModel']>
+    readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
+    readonly getCurrentScope: UnwrapRef<typeof import('vue')['getCurrentScope']>
+    readonly getCurrentWatcher: UnwrapRef<typeof import('vue')['getCurrentWatcher']>
+    readonly getPaginationRowModel: UnwrapRef<typeof import('@tanstack/vue-table')['getPaginationRowModel']>
+    readonly h: UnwrapRef<typeof import('vue')['h']>
+    readonly inject: UnwrapRef<typeof import('vue')['inject']>
+    readonly isProxy: UnwrapRef<typeof import('vue')['isProxy']>
+    readonly isReactive: UnwrapRef<typeof import('vue')['isReactive']>
+    readonly isReadonly: UnwrapRef<typeof import('vue')['isReadonly']>
+    readonly isRef: UnwrapRef<typeof import('vue')['isRef']>
+    readonly isShallow: UnwrapRef<typeof import('vue')['isShallow']>
+    readonly markRaw: UnwrapRef<typeof import('vue')['markRaw']>
+    readonly menuApi: UnwrapRef<typeof import('./src/services/api/menuApi')['default']>
+    readonly menuKey: UnwrapRef<typeof import('./src/providers/injectionKeys')['menuKey']>
+    readonly menuQuery: UnwrapRef<typeof import('./src/services/supabase/queries/menuQueries')['menuQuery']>
+    readonly menusQuery: UnwrapRef<typeof import('./src/services/supabase/queries/menuQueries')['menusQuery']>
+    readonly menusWithCategoriesQuery: UnwrapRef<typeof import('./src/services/supabase/queries/menuQueries')['menusWithCategoriesQuery']>
+    readonly nextTick: UnwrapRef<typeof import('vue')['nextTick']>
+    readonly onActivated: UnwrapRef<typeof import('vue')['onActivated']>
+    readonly onBeforeMount: UnwrapRef<typeof import('vue')['onBeforeMount']>
+    readonly onBeforeRouteLeave: UnwrapRef<typeof import('vue-router')['onBeforeRouteLeave']>
+    readonly onBeforeRouteUpdate: UnwrapRef<typeof import('vue-router')['onBeforeRouteUpdate']>
+    readonly onBeforeUnmount: UnwrapRef<typeof import('vue')['onBeforeUnmount']>
+    readonly onBeforeUpdate: UnwrapRef<typeof import('vue')['onBeforeUpdate']>
+    readonly onDeactivated: UnwrapRef<typeof import('vue')['onDeactivated']>
+    readonly onErrorCaptured: UnwrapRef<typeof import('vue')['onErrorCaptured']>
+    readonly onMounted: UnwrapRef<typeof import('vue')['onMounted']>
+    readonly onRenderTracked: UnwrapRef<typeof import('vue')['onRenderTracked']>
+    readonly onRenderTriggered: UnwrapRef<typeof import('vue')['onRenderTriggered']>
+    readonly onScopeDispose: UnwrapRef<typeof import('vue')['onScopeDispose']>
+    readonly onServerPrefetch: UnwrapRef<typeof import('vue')['onServerPrefetch']>
+    readonly onUnmounted: UnwrapRef<typeof import('vue')['onUnmounted']>
+    readonly onUpdated: UnwrapRef<typeof import('vue')['onUpdated']>
+    readonly onWatcherCleanup: UnwrapRef<typeof import('vue')['onWatcherCleanup']>
+    readonly openTabsQuery: UnwrapRef<typeof import('./src/services/supabase/queries/tabQueries')['openTabsQuery']>
+    readonly profileApi: UnwrapRef<typeof import('./src/services/api/profileApi')['default']>
+    readonly profileQuery: UnwrapRef<typeof import('./src/services/supabase/queries/profileQueries')['profileQuery']>
+    readonly profilesQuery: UnwrapRef<typeof import('./src/services/supabase/queries/profileQueries')['profilesQuery']>
+    readonly provide: UnwrapRef<typeof import('vue')['provide']>
+    readonly reactive: UnwrapRef<typeof import('vue')['reactive']>
+    readonly readonly: UnwrapRef<typeof import('vue')['readonly']>
+    readonly ref: UnwrapRef<typeof import('vue')['ref']>
+    readonly resolveComponent: UnwrapRef<typeof import('vue')['resolveComponent']>
+    readonly shallowReactive: UnwrapRef<typeof import('vue')['shallowReactive']>
+    readonly shallowReadonly: UnwrapRef<typeof import('vue')['shallowReadonly']>
+    readonly shallowRef: UnwrapRef<typeof import('vue')['shallowRef']>
+    readonly socket: UnwrapRef<typeof import('./src/services/socket/socket')['socket']>
+    readonly storeToRefs: UnwrapRef<typeof import('pinia')['storeToRefs']>
+    readonly supabase: UnwrapRef<typeof import('./src/providers/supabaseClient')['supabase']>
+    readonly tabApi: UnwrapRef<typeof import('./src/services/api/tabApi')['default']>
+    readonly tabItemsQuery: UnwrapRef<typeof import('./src/services/supabase/queries/tabQueries')['tabItemsQuery']>
+    readonly tabPaymentsQuery: UnwrapRef<typeof import('./src/services/supabase/queries/tabQueries')['tabPaymentsQuery']>
+    readonly tabQuery: UnwrapRef<typeof import('./src/services/supabase/queries/tabQueries')['tabQuery']>
+    readonly tabSplitsQuery: UnwrapRef<typeof import('./src/services/supabase/queries/tabQueries')['tabSplitsQuery']>
+    readonly tabTotalsQuery: UnwrapRef<typeof import('./src/services/supabase/queries/tabQueries')['tabTotalsQuery']>
+    readonly tabsQuery: UnwrapRef<typeof import('./src/services/supabase/queries/tabQueries')['tabsQuery']>
+    readonly toRaw: UnwrapRef<typeof import('vue')['toRaw']>
+    readonly toRef: UnwrapRef<typeof import('vue')['toRef']>
+    readonly toRefs: UnwrapRef<typeof import('vue')['toRefs']>
+    readonly toValue: UnwrapRef<typeof import('vue')['toValue']>
+    readonly todaysTabsCountQuery: UnwrapRef<typeof import('./src/services/supabase/queries/tabQueries')['todaysTabsCountQuery']>
+    readonly triggerRef: UnwrapRef<typeof import('vue')['triggerRef']>
+    readonly unref: UnwrapRef<typeof import('vue')['unref']>
+    readonly updateDrinkQuery: UnwrapRef<typeof import('./src/services/supabase/queries/drinkQueries')['updateDrinkQuery']>
+    readonly updateTabItemQuery: UnwrapRef<typeof import('./src/services/supabase/queries/tabQueries')['updateTabItemQuery']>
+    readonly updateTabQuery: UnwrapRef<typeof import('./src/services/supabase/queries/tabQueries')['updateTabQuery']>
+    readonly updateTabSplitQuery: UnwrapRef<typeof import('./src/services/supabase/queries/tabQueries')['updateTabSplitQuery']>
+    readonly updateUserQuery: UnwrapRef<typeof import('./src/services/supabase/queries/profileQueries')['updateUserQuery']>
+    readonly useAddToTabStore: UnwrapRef<typeof import('./src/stores/ui/addToTab')['useAddToTabStore']>
+    readonly useAttrs: UnwrapRef<typeof import('vue')['useAttrs']>
+    readonly useAuthStore: UnwrapRef<typeof import('./src/stores/auth')['useAuthStore']>
+    readonly useBarsStore: UnwrapRef<typeof import('./src/stores/loaders/bars')['useBarsStore']>
+    readonly useCssModule: UnwrapRef<typeof import('vue')['useCssModule']>
+    readonly useCssVars: UnwrapRef<typeof import('vue')['useCssVars']>
+    readonly useDrinkSheetStore: UnwrapRef<typeof import('./src/stores/ui/drinkSheet')['useDrinkSheetStore']>
+    readonly useDrinksStore: UnwrapRef<typeof import('./src/stores/loaders/drinks')['useDrinksStore']>
+    readonly useErrorStore: UnwrapRef<typeof import('./src/stores/error')['useErrorStore']>
+    readonly useId: UnwrapRef<typeof import('vue')['useId']>
+    readonly useMemoize: UnwrapRef<typeof import('@vueuse/core')['useMemoize']>
+    readonly useMenusStore: UnwrapRef<typeof import('./src/stores/loaders/menus')['useMenusStore']>
+    readonly useMeta: UnwrapRef<typeof import('vue-meta')['useMeta']>
+    readonly useModel: UnwrapRef<typeof import('vue')['useModel']>
+    readonly useNewTabSheetStore: UnwrapRef<typeof import('./src/stores/ui/newTabSheet')['useNewTabSheetStore']>
+    readonly usePageStore: UnwrapRef<typeof import('./src/stores/page')['usePageStore']>
+    readonly usePaginationStore: UnwrapRef<typeof import('./src/stores/ui/pagination')['usePaginationStore']>
+    readonly useRoute: UnwrapRef<typeof import('vue-router')['useRoute']>
+    readonly useRouter: UnwrapRef<typeof import('vue-router')['useRouter']>
+    readonly useSlots: UnwrapRef<typeof import('vue')['useSlots']>
+    readonly useSplitBillSheetStore: UnwrapRef<typeof import('./src/stores/ui/splitBillSheet')['useSplitBillSheetStore']>
+    readonly useTabSheetStore: UnwrapRef<typeof import('./src/stores/tabSheet')['useTabSheetStore']>
+    readonly useTabsStore: UnwrapRef<typeof import('./src/stores/loaders/tabs')['useTabsStore']>
+    readonly useTemplateRef: UnwrapRef<typeof import('vue')['useTemplateRef']>
+    readonly useUserSheetStore: UnwrapRef<typeof import('./src/stores/ui/userSheet')['useUserSheetStore']>
+    readonly useUsersStore: UnwrapRef<typeof import('./src/stores/loaders/users')['useUsersStore']>
+    readonly useVueTable: UnwrapRef<typeof import('@tanstack/vue-table')['useVueTable']>
+    readonly userTabsQuery: UnwrapRef<typeof import('./src/services/supabase/queries/tabQueries')['userTabsQuery']>
+    readonly watch: UnwrapRef<typeof import('vue')['watch']>
+    readonly watchEffect: UnwrapRef<typeof import('vue')['watchEffect']>
+    readonly watchPostEffect: UnwrapRef<typeof import('vue')['watchPostEffect']>
+    readonly watchSyncEffect: UnwrapRef<typeof import('vue')['watchSyncEffect']>
+  }
 }
