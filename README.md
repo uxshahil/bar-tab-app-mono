@@ -35,3 +35,4 @@ This project is configured to run entirely within Docker containers.
 -   `app/` - Vue.js Frontend
 -   `api/` - Node.js/Express Backend
 -   `docker-compose.yml` - Orchestration for App and API
+
